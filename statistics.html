@@ -17,11 +17,25 @@
     .nav a:hover { background: rgba(255,255,255,0.2); }
     .nav a.active { background: var(--monday); color: var(--storm); }
 
-    .header { margin-bottom: 40px; }
-    .header h1 { font-size: 36px; font-weight: 800; color: var(--monday); text-transform: uppercase; letter-spacing: -1px; }
-    .header p { color: rgba(255,255,255,0.6); margin-top: 8px; font-size: 16px; }
+    .header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 32px; flex-wrap: wrap; gap: 20px; }
+    .header-left h1 { font-size: 36px; font-weight: 800; color: var(--monday); text-transform: uppercase; letter-spacing: -1px; }
+    .header-left p { color: rgba(255,255,255,0.6); margin-top: 8px; font-size: 16px; }
 
-    .section-title { font-size: 14px; font-weight: 700; color: var(--monday); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 20px; display: flex; align-items: center; gap: 10px; }
+    /* Date Filters */
+    .filters { background: rgba(255,255,255,0.03); border-radius: 12px; padding: 16px 20px; display: flex; flex-wrap: wrap; gap: 12px; align-items: flex-end; }
+    .filter-group { display: flex; flex-direction: column; gap: 4px; }
+    .filter-label { font-size: 10px; color: rgba(255,255,255,0.5); text-transform: uppercase; font-weight: 600; }
+    input[type="date"] { padding: 10px 14px; background: rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.15); border-radius: 8px; color: white; font-size: 13px; font-family: 'Inter', sans-serif; }
+    input[type="date"]:focus { outline: none; border-color: var(--monday); }
+    .quick-btns { display: flex; gap: 6px; flex-wrap: wrap; }
+    .quick-btn { padding: 10px 16px; background: rgba(255,255,255,0.08); border: none; border-radius: 20px; font-size: 12px; color: white; cursor: pointer; font-family: 'Inter', sans-serif; transition: all 0.2s; font-weight: 500; }
+    .quick-btn:hover, .quick-btn.active { background: var(--monday); color: var(--storm); }
+    .btn { padding: 10px 18px; background: var(--suede); color: white; border: none; border-radius: 8px; font-size: 13px; font-weight: 600; cursor: pointer; font-family: 'Inter', sans-serif; transition: all 0.2s; }
+    .btn:hover { background: var(--monday); color: var(--storm); }
+
+    .date-range-display { font-size: 13px; color: rgba(255,255,255,0.6); margin-top: 12px; padding: 8px 12px; background: rgba(0,0,0,0.2); border-radius: 6px; display: inline-block; }
+
+    .section-title { font-size: 14px; font-weight: 700; color: var(--monday); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 20px; margin-top: 32px; display: flex; align-items: center; gap: 10px; }
     .section-title::before { content: ''; width: 4px; height: 24px; background: var(--monday); border-radius: 2px; }
 
     .stats-grid { display: grid; grid-template-columns: repeat(6, 1fr); gap: 16px; margin-bottom: 40px; }
@@ -58,7 +72,7 @@
     .refresh-time { font-size: 14px; color: rgba(255,255,255,0.5); margin-top: 8px; }
 
     @media (max-width: 1200px) { .stats-grid { grid-template-columns: repeat(3, 1fr); } .article-stats-grid { grid-template-columns: repeat(3, 1fr); } }
-    @media (max-width: 768px) { .charts-grid { grid-template-columns: 1fr; } .chart-card.full-width { grid-column: span 1; } .stats-grid { grid-template-columns: repeat(2, 1fr); } .article-stats-grid { grid-template-columns: repeat(2, 1fr); } }
+    @media (max-width: 768px) { .charts-grid { grid-template-columns: 1fr; } .chart-card.full-width { grid-column: span 1; } .stats-grid { grid-template-columns: repeat(2, 1fr); } .article-stats-grid { grid-template-columns: repeat(2, 1fr); } .filters { flex-direction: column; align-items: stretch; } }
   </style>
 </head>
 <body>
@@ -69,9 +83,31 @@
     </nav>
 
     <div class="header">
-      <h1>Statistics Dashboard</h1>
-      <p>Overview of incoming links and article performance</p>
+      <div class="header-left">
+        <h1>Statistics Dashboard</h1>
+        <p>Overview of incoming links and article performance</p>
+      </div>
     </div>
+
+    <!-- Date Filters -->
+    <div class="filters">
+      <div class="filter-group">
+        <span class="filter-label">From</span>
+        <input type="date" id="filter-from">
+      </div>
+      <div class="filter-group">
+        <span class="filter-label">To</span>
+        <input type="date" id="filter-to">
+      </div>
+      <div class="quick-btns">
+        <button class="quick-btn" onclick="quickFilter('7d')">Last 7d</button>
+        <button class="quick-btn active" onclick="quickFilter('30d')">Last 30d</button>
+        <button class="quick-btn" onclick="quickFilter('90d')">Last 90d</button>
+        <button class="quick-btn" onclick="quickFilter('all')">All Time</button>
+      </div>
+      <button class="btn" onclick="loadStats()">↻ Apply</button>
+    </div>
+    <div class="date-range-display" id="date-range-display">Loading...</div>
 
     <div class="section-title">Links Overview</div>
     <div class="stats-grid">
@@ -108,7 +144,7 @@
         <div class="article-stat">
           <div class="article-stat-value" id="art-avg">-</div>
           <div class="article-stat-label">Avg/Day</div>
-          <div class="article-stat-percent">Last 30 days</div>
+          <div class="article-stat-percent" id="art-avg-label">Selected period</div>
         </div>
       </div>
     </div>
@@ -116,7 +152,7 @@
     <div class="section-title">Analytics</div>
     <div class="charts-grid">
       <div class="chart-card full-width">
-        <div class="chart-title">Links Over Time (Last 30 Days)</div>
+        <div class="chart-title" id="chart-title">Links Over Time</div>
         <div class="chart-container"><canvas id="timeChart"></canvas></div>
       </div>
       <div class="chart-card">
@@ -142,16 +178,58 @@
     const SUPABASE_URL = 'https://kwftlkfvtglnugxsyjci.supabase.co';
     const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imt3ZnRsa2Z2dGdsbnVneHN5amNpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDc2NDAxODUsImV4cCI6MjA2MzIxNjE4NX0.9Cn1xahmF8q6pbbWQHNyQSc9fZkVvJaqTzMRZCtmb9E';
     let charts = {};
+    let currentPeriod = '30d';
+
+    // Set default dates (last 30 days)
+    function initDates() {
+      const today = new Date();
+      const thirtyDaysAgo = new Date(Date.now() - 30*24*60*60*1000);
+      document.getElementById('filter-to').value = today.toISOString().split('T')[0];
+      document.getElementById('filter-from').value = thirtyDaysAgo.toISOString().split('T')[0];
+    }
+
+    function quickFilter(period) {
+      currentPeriod = period;
+      document.querySelectorAll('.quick-btn').forEach(b => b.classList.remove('active'));
+      event.target.classList.add('active');
+
+      const today = new Date();
+      let fromDate;
+
+      if (period === '7d') {
+        fromDate = new Date(Date.now() - 7*24*60*60*1000);
+      } else if (period === '30d') {
+        fromDate = new Date(Date.now() - 30*24*60*60*1000);
+      } else if (period === '90d') {
+        fromDate = new Date(Date.now() - 90*24*60*60*1000);
+      } else {
+        fromDate = new Date('2025-01-01'); // All time
+      }
+
+      document.getElementById('filter-to').value = today.toISOString().split('T')[0];
+      document.getElementById('filter-from').value = fromDate.toISOString().split('T')[0];
+      loadStats();
+    }
+
+    function getDateFilter() {
+      const from = document.getElementById('filter-from').value;
+      const to = document.getElementById('filter-to').value;
+      let filter = '';
+      if (from) filter += `&uploaded_at=gte.${from}T00:00:00`;
+      if (to) filter += `&uploaded_at=lte.${to}T23:59:59`;
+      return filter;
+    }
 
     // Use Prefer: count=exact with Range: 0-0 to get accurate counts without fetching data
     async function fetchCount(endpoint, filter = '') {
-      const url = `${SUPABASE_URL}/rest/v1/${endpoint}?select=id${filter}`;
+      const dateFilter = getDateFilter();
+      const url = `${SUPABASE_URL}/rest/v1/${endpoint}?select=id${filter}${dateFilter}`;
       const response = await fetch(url, {
         headers: {
           'apikey': SUPABASE_KEY,
           'Authorization': `Bearer ${SUPABASE_KEY}`,
           'Prefer': 'count=exact',
-          'Range': '0-0' // Only get count, no data
+          'Range': '0-0'
         }
       });
       const range = response.headers.get('content-range');
@@ -175,6 +253,17 @@
     const fmt = n => n?.toLocaleString() || '0';
 
     async function loadStats() {
+      const from = document.getElementById('filter-from').value;
+      const to = document.getElementById('filter-to').value;
+
+      // Update date range display
+      const fromDate = new Date(from);
+      const toDate = new Date(to);
+      const daysDiff = Math.ceil((toDate - fromDate) / (1000 * 60 * 60 * 24));
+      document.getElementById('date-range-display').textContent =
+        `📅 ${fromDate.toLocaleDateString('en-GB', {day: '2-digit', month: 'short', year: 'numeric'})} → ${toDate.toLocaleDateString('en-GB', {day: '2-digit', month: 'short', year: 'numeric'})} (${daysDiff} days)`;
+      document.getElementById('chart-title').textContent = `Links Over Time (${daysDiff} days)`;
+
       // Use COUNT queries with Prefer: count=exact and Range: 0-0 header to get accurate totals
       const [total, high, medium, low, done, drafts, flagged] = await Promise.all([
         fetchCount('incoming_links'),
@@ -186,8 +275,13 @@
         fetchCount('relevance_feedback')
       ]);
 
-      // Get domain counts
-      const domainData = await fetchData('incoming_links', { select: 'domain', limit: 50000 });
+      // Get domain counts for selected period
+      const dateFilter = getDateFilter();
+      const domainData = await fetchData('incoming_links', {
+        select: 'domain',
+        limit: 100000,
+        ...(from && { 'uploaded_at': `gte.${from}T00:00:00` })
+      });
       const domains = {};
       domainData.forEach(d => { if (d.domain) domains[d.domain] = (domains[d.domain] || 0) + 1; });
 
@@ -205,14 +299,18 @@
       document.getElementById('art-flagged-pct').textContent = total > 0 ? `${((flagged/total)*100).toFixed(2)}%` : '-';
       document.getElementById('art-conversion').textContent = high > 0 ? `${((drafts/high)*100).toFixed(1)}%` : '0%';
 
-      // Get last 30 days data for chart
-      const thirtyDaysAgo = new Date(Date.now() - 30*24*60*60*1000).toISOString();
-      const recentData = await fetchData('incoming_links', {
+      // Get data for chart within selected period
+      const chartData = await fetchData('incoming_links', {
         select: 'uploaded_at',
-        'uploaded_at': `gte.${thirtyDaysAgo}`,
-        limit: 50000
+        'uploaded_at': `gte.${from}T00:00:00`,
+        limit: 100000
       });
-      document.getElementById('art-avg').textContent = Math.round(recentData.length / 30);
+
+      // Filter by to date as well
+      const filteredData = to ? chartData.filter(d => d.uploaded_at <= `${to}T23:59:59`) : chartData;
+
+      document.getElementById('art-avg').textContent = daysDiff > 0 ? Math.round(filteredData.length / daysDiff) : '-';
+      document.getElementById('art-avg-label').textContent = `${daysDiff} days`;
 
       // Domains list
       const sortedDomains = Object.entries(domains).sort((a,b) => b[1]-a[1]);
@@ -220,7 +318,7 @@
         `<div class="domain-row"><span class="domain-name">${name}</span><span class="domain-count">${fmt(count)} links</span></div>`
       ).join('');
 
-      updateCharts(recentData, domains, { high, medium, low, notSet: total - high - medium - low });
+      updateCharts(filteredData, domains, { high, medium, low, notSet: total - high - medium - low });
       document.getElementById('last-update').textContent = new Date().toLocaleTimeString();
     }
 
@@ -230,14 +328,14 @@
 
       const byDate = {};
       recentData.forEach(d => { const date = d.uploaded_at?.split('T')[0]; if (date) byDate[date] = (byDate[date] || 0) + 1; });
-      const sortedDates = Object.keys(byDate).sort().slice(-30);
+      const sortedDates = Object.keys(byDate).sort();
 
       if (charts.time) charts.time.destroy();
       charts.time = new Chart(document.getElementById('timeChart'), {
         type: 'line',
         data: {
           labels: sortedDates.map(d => new Date(d).toLocaleDateString('en-GB', { day: '2-digit', month: 'short' })),
-          datasets: [{ label: 'Links', data: sortedDates.map(d => byDate[d]), borderColor: '#79E2FF', backgroundColor: 'rgba(121,226,255,0.15)', fill: true, tension: 0.4, pointRadius: 4, pointBackgroundColor: '#79E2FF' }]
+          datasets: [{ label: 'Links', data: sortedDates.map(d => byDate[d]), borderColor: '#79E2FF', backgroundColor: 'rgba(121,226,255,0.15)', fill: true, tension: 0.4, pointRadius: sortedDates.length > 60 ? 0 : 4, pointBackgroundColor: '#79E2FF' }]
         },
         options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true } } }
       });
@@ -265,6 +363,7 @@
       });
     }
 
+    initDates();
     loadStats();
     setInterval(loadStats, 120000);
   </script>
