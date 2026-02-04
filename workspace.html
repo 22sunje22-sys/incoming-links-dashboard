@@ -25,11 +25,14 @@
 
     .btn { padding: 10px 18px; background: var(--suede); color: white; border: none; border-radius: 8px; font-size: 13px; font-weight: 600; cursor: pointer; font-family: 'Inter', sans-serif; transition: all 0.2s; }
     .btn:hover { background: var(--monday); color: var(--storm); }
-    .btn-small { padding: 6px 10px; font-size: 11px; }
-    .btn-done { background: var(--day); color: var(--storm); min-width: 32px; }
-    .btn-done.active { background: #22c55e; }
-    .btn-flag { background: transparent; border: 1px solid var(--monday); color: var(--monday); }
-    .btn-flag:hover { background: var(--monday); color: var(--storm); }
+
+    /* Tabs */
+    .tabs { display: flex; gap: 4px; margin-bottom: 20px; background: rgba(255,255,255,0.05); padding: 4px; border-radius: 12px; width: fit-content; }
+    .tab { padding: 12px 24px; background: transparent; border: none; border-radius: 8px; color: rgba(255,255,255,0.6); font-size: 14px; font-weight: 600; cursor: pointer; font-family: 'Inter', sans-serif; transition: all 0.2s; display: flex; align-items: center; gap: 8px; }
+    .tab:hover { color: white; background: rgba(255,255,255,0.1); }
+    .tab.active { background: var(--monday); color: var(--storm); }
+    .tab-count { padding: 2px 8px; background: rgba(0,0,0,0.2); border-radius: 10px; font-size: 12px; }
+    .tab.active .tab-count { background: rgba(0,0,0,0.15); }
 
     .filters { background: rgba(255,255,255,0.03); border-radius: 12px; padding: 16px; margin-bottom: 20px; display: flex; flex-wrap: wrap; gap: 12px; align-items: flex-end; }
     .filter-group { display: flex; flex-direction: column; gap: 4px; }
@@ -48,52 +51,69 @@
     table { width: 100%; border-collapse: collapse; }
     thead { background: rgba(0,0,0,0.4); position: sticky; top: 0; }
     th { padding: 14px 12px; text-align: left; font-size: 10px; font-weight: 700; color: var(--monday); text-transform: uppercase; letter-spacing: 0.5px; white-space: nowrap; border-bottom: 2px solid var(--monday); }
-    td { padding: 12px; border-bottom: 1px solid rgba(255,255,255,0.04); font-size: 12px; color: rgba(255,255,255,0.85); vertical-align: top; }
+    td { padding: 14px 12px; border-bottom: 1px solid rgba(255,255,255,0.05); font-size: 13px; vertical-align: top; }
     tr:hover { background: rgba(121,226,255,0.03); }
-    tr.done-row { opacity: 0.5; }
 
-    .domain-cell { font-weight: 700; color: var(--monday); font-size: 13px; }
-    .url-link { color: var(--monday); text-decoration: none; font-size: 11px; word-break: break-all; }
-    .url-link:hover { color: var(--day); text-decoration: underline; }
+    .domain { color: var(--monday); font-weight: 600; font-size: 12px; }
+    .title-cell { max-width: 200px; }
+    .title-text { font-weight: 500; color: white; cursor: pointer; }
+    .title-text:hover { color: var(--monday); }
+    .desc-cell { max-width: 220px; }
+    .desc-text { color: rgba(255,255,255,0.6); font-size: 12px; cursor: pointer; }
+    .expand-hint { font-size: 10px; color: var(--suede); margin-top: 4px; }
+    .expanded { white-space: normal !important; }
+    .truncate { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
 
-    .draft-link { display: inline-flex; align-items: center; gap: 4px; padding: 6px 12px; background: rgba(199,248,186,0.15); border-radius: 6px; color: var(--day); text-decoration: none; font-size: 12px; font-weight: 600; transition: all 0.2s; margin: 2px 0; }
-    .draft-link:hover { background: var(--day); color: var(--storm); }
-    .draft-link.ar { background: rgba(121,226,255,0.15); color: var(--monday); }
-    .draft-link.ar:hover { background: var(--monday); color: var(--storm); }
-    .no-draft { color: rgba(255,255,255,0.3); font-size: 11px; }
+    .source-link { color: var(--suede); text-decoration: none; font-size: 12px; word-break: break-all; }
+    .source-link:hover { color: var(--monday); text-decoration: underline; }
 
-    .badge { display: inline-block; padding: 4px 10px; border-radius: 20px; font-size: 10px; font-weight: 700; }
-    .badge.high { background: rgba(199,248,186,0.2); color: var(--day); }
-    .badge.medium { background: rgba(121,226,255,0.2); color: var(--monday); }
-    .badge.low { background: rgba(255,100,100,0.2); color: #ff6b6b; }
-    .badge.done { background: rgba(34,197,94,0.25); color: #22c55e; }
-    .badge.pending { background: rgba(255,255,255,0.08); color: rgba(255,255,255,0.4); }
+    .draft-link { display: inline-flex; align-items: center; gap: 6px; padding: 6px 12px; background: var(--day); color: var(--storm); border-radius: 6px; text-decoration: none; font-size: 11px; font-weight: 700; transition: all 0.2s; }
+    .draft-link:hover { transform: scale(1.05); box-shadow: 0 4px 12px rgba(199,248,186,0.3); }
+    .draft-link.ar { background: var(--monday); }
+    .no-draft { color: rgba(255,255,255,0.2); font-size: 12px; }
 
-    .expandable { cursor: pointer; max-width: 250px; }
-    .expandable-text { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; line-height: 1.5; transition: all 0.3s; }
-    .expandable-text.expanded { -webkit-line-clamp: unset; display: block; }
-    .expand-hint { color: var(--monday); font-size: 10px; margin-top: 4px; }
+    .region { font-size: 12px; }
+    .relevance { padding: 4px 10px; border-radius: 12px; font-size: 11px; font-weight: 700; text-transform: uppercase; }
+    .relevance.high { background: rgba(199,248,186,0.2); color: var(--day); }
+    .relevance.medium { background: rgba(0,165,211,0.2); color: var(--suede); }
+    .relevance.low { background: rgba(255,107,107,0.2); color: #ff6b6b; }
 
-    .pagination { display: flex; justify-content: space-between; align-items: center; padding: 16px 0; }
-    .pagination button { padding: 10px 18px; background: rgba(255,255,255,0.1); border: none; border-radius: 8px; font-size: 13px; font-weight: 600; color: white; cursor: pointer; font-family: 'Inter', sans-serif; }
-    .pagination button:hover:not(:disabled) { background: var(--monday); color: var(--storm); }
-    .pagination button:disabled { opacity: 0.3; cursor: not-allowed; }
-    .pagination span { font-size: 13px; color: rgba(255,255,255,0.6); }
+    .status { font-size: 12px; padding: 4px 10px; border-radius: 12px; }
+    .status.pending { background: rgba(255,255,255,0.1); color: rgba(255,255,255,0.5); }
+    .status.done { background: rgba(199,248,186,0.2); color: var(--day); }
 
-    .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.85); display: none; justify-content: center; align-items: center; z-index: 1000; }
-    .modal-overlay.active { display: flex; }
-    .modal { background: var(--storm); border: 1px solid rgba(255,255,255,0.2); border-radius: 16px; padding: 28px; max-width: 480px; width: 95%; }
-    .modal h3 { color: var(--monday); margin-bottom: 20px; font-size: 20px; }
+    .date { font-size: 12px; color: rgba(255,255,255,0.5); white-space: nowrap; }
+
+    /* Action buttons - more obvious */
+    .actions { display: flex; gap: 8px; flex-wrap: wrap; }
+    .action-btn { padding: 8px 14px; border: none; border-radius: 8px; font-size: 12px; font-weight: 600; cursor: pointer; font-family: 'Inter', sans-serif; transition: all 0.2s; display: flex; align-items: center; gap: 6px; }
+    .action-btn.done-btn { background: rgba(199,248,186,0.15); color: var(--day); border: 1px solid rgba(199,248,186,0.3); }
+    .action-btn.done-btn:hover { background: var(--day); color: var(--storm); }
+    .action-btn.done-btn.active { background: var(--day); color: var(--storm); }
+    .action-btn.flag-btn { background: rgba(255,107,107,0.15); color: #ff6b6b; border: 1px solid rgba(255,107,107,0.3); }
+    .action-btn.flag-btn:hover { background: #ff6b6b; color: white; }
+    .action-btn.flag-btn.active { background: #ff6b6b; color: white; }
+
+    .pagination { display: flex; justify-content: center; align-items: center; gap: 12px; margin-top: 24px; padding: 20px; }
+    .page-btn { padding: 10px 18px; background: rgba(255,255,255,0.1); border: none; border-radius: 8px; color: white; font-size: 13px; cursor: pointer; font-family: 'Inter', sans-serif; transition: all 0.2s; }
+    .page-btn:hover:not(:disabled) { background: var(--monday); color: var(--storm); }
+    .page-btn:disabled { opacity: 0.3; cursor: not-allowed; }
+    .page-info { font-size: 14px; color: rgba(255,255,255,0.6); }
+
+    /* Modal */
+    .modal-overlay { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.8); z-index: 1000; align-items: center; justify-content: center; }
+    .modal-overlay.show { display: flex; }
+    .modal { background: var(--storm); border: 1px solid rgba(255,255,255,0.1); border-radius: 16px; padding: 32px; max-width: 500px; width: 90%; }
+    .modal h2 { color: var(--monday); margin-bottom: 20px; font-size: 20px; }
     .modal label { display: block; margin-bottom: 8px; font-size: 13px; color: rgba(255,255,255,0.7); }
-    .modal select, .modal textarea { width: 100%; margin-bottom: 16px; }
-    .modal textarea { min-height: 80px; resize: vertical; padding: 12px; background: rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.15); border-radius: 8px; color: white; font-family: 'Inter', sans-serif; font-size: 14px; }
-    .modal-btns { display: flex; gap: 12px; justify-content: flex-end; }
+    .modal select, .modal textarea { width: 100%; padding: 12px; background: rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.15); border-radius: 8px; color: white; font-size: 14px; font-family: 'Inter', sans-serif; margin-bottom: 16px; }
+    .modal textarea { min-height: 100px; resize: vertical; }
+    .modal-buttons { display: flex; gap: 12px; justify-content: flex-end; }
+    .modal-btn { padding: 12px 24px; border: none; border-radius: 8px; font-size: 14px; font-weight: 600; cursor: pointer; font-family: 'Inter', sans-serif; }
+    .modal-btn.cancel { background: rgba(255,255,255,0.1); color: white; }
+    .modal-btn.submit { background: var(--monday); color: var(--storm); }
 
-    .loading { text-align: center; padding: 60px; color: rgba(255,255,255,0.5); }
-    .spinner { width: 36px; height: 36px; border: 3px solid rgba(255,255,255,0.1); border-top-color: var(--monday); border-radius: 50%; animation: spin 1s linear infinite; margin: 0 auto 16px; }
-    @keyframes spin { to { transform: rotate(360deg); } }
-
-    .actions-cell { white-space: nowrap; }
+    .footer { text-align: center; padding: 24px; font-size: 12px; color: rgba(255,255,255,0.3); }
   </style>
 </head>
 <body>
@@ -107,40 +127,52 @@
       <h1>📝 Workspace</h1>
       <div class="header-right">
         <div class="live"><div class="live-dot"></div> Live</div>
-        <button class="btn" onclick="refreshData()">↻ Refresh</button>
+        <button class="btn" onclick="loadData()">↻ Refresh</button>
       </div>
+    </div>
+
+    <!-- Tabs -->
+    <div class="tabs">
+      <button class="tab active" data-tab="all" onclick="switchTab('all')">
+        📋 All <span class="tab-count" id="count-all">-</span>
+      </button>
+      <button class="tab" data-tab="done" onclick="switchTab('done')">
+        ✅ Done <span class="tab-count" id="count-done">-</span>
+      </button>
+      <button class="tab" data-tab="flagged" onclick="switchTab('flagged')">
+        🚩 Flagged <span class="tab-count" id="count-flagged">-</span>
+      </button>
     </div>
 
     <div class="filters">
       <div class="filter-group">
         <span class="filter-label">Domain</span>
-        <select id="filter-domain" onchange="applyFilters()"><option value="">All</option></select>
+        <select id="filter-domain"><option value="">All</option></select>
       </div>
       <div class="filter-group">
         <span class="filter-label">Relevance</span>
-        <select id="filter-relevance" onchange="applyFilters()">
+        <select id="filter-relevance">
           <option value="">All</option>
           <option value="high">✅ High</option>
           <option value="medium">☑️ Medium</option>
           <option value="low">❌ Low</option>
-          <option value="null">Not Set</option>
         </select>
       </div>
       <div class="filter-group">
         <span class="filter-label">Status</span>
-        <select id="filter-done" onchange="applyFilters()">
+        <select id="filter-status">
           <option value="">All</option>
-          <option value="done">✓ Done</option>
-          <option value="pending">○ Pending</option>
+          <option value="pending">Pending</option>
+          <option value="done">Done</option>
         </select>
       </div>
       <div class="filter-group">
         <span class="filter-label">From</span>
-        <input type="date" id="filter-from" onchange="applyFilters()">
+        <input type="date" id="filter-from">
       </div>
       <div class="filter-group">
         <span class="filter-label">To</span>
-        <input type="date" id="filter-to" onchange="applyFilters()">
+        <input type="date" id="filter-to">
       </div>
       <div class="quick-btns">
         <button class="quick-btn" onclick="quickFilter('3h')">Last 3h</button>
@@ -148,13 +180,13 @@
         <button class="quick-btn" onclick="quickFilter('7d')">Last 7d</button>
         <button class="quick-btn" onclick="quickFilter('high')">High Only</button>
         <button class="quick-btn" onclick="quickFilter('drafts')">With Drafts</button>
-        <button class="quick-btn" onclick="quickFilter('clear')">Clear</button>
+        <button class="quick-btn" onclick="clearFilters()">Clear</button>
       </div>
     </div>
 
     <div class="table-info">
-      <span id="table-info">Loading...</span>
-      <span id="last-update"></span>
+      <span id="showing">Loading...</span>
+      <span>Updated: <span id="updated-time">-</span></span>
     </div>
 
     <div class="table-wrapper">
@@ -174,35 +206,34 @@
             <th>Actions</th>
           </tr>
         </thead>
-        <tbody id="table-body">
-          <tr><td colspan="11" class="loading"><div class="spinner"></div>Loading articles...</td></tr>
-        </tbody>
+        <tbody id="table-body"></tbody>
       </table>
     </div>
 
     <div class="pagination">
-      <button id="prev-btn" onclick="prevPage()" disabled>← Previous</button>
-      <span id="page-info">Page 1</span>
-      <button id="next-btn" onclick="nextPage()">Next →</button>
+      <button class="page-btn" id="prev-btn" onclick="changePage(-1)">← Previous</button>
+      <span class="page-info" id="page-info">Page 1</span>
+      <button class="page-btn" id="next-btn" onclick="changePage(1)">Next →</button>
     </div>
+
+    <div class="footer">Incoming Links Dashboard • Auto-refresh every 2 min</div>
   </div>
 
-  <div class="modal-overlay" id="modal">
+  <!-- Flag Modal -->
+  <div class="modal-overlay" id="flag-modal">
     <div class="modal">
-      <h3>⚑ Report Wrong Relevance</h3>
-      <input type="hidden" id="modal-id">
-      <label>Current: <strong id="modal-current"></strong></label>
-      <label style="margin-top:12px">Correct Relevance:</label>
-      <select id="modal-relevance">
-        <option value="✅ high">✅ High</option>
-        <option value="☑️ medium">☑️ Medium</option>
-        <option value="❌ low">❌ Low</option>
+      <h2>🚩 Report Wrong Relevance</h2>
+      <label>What should be the correct relevance?</label>
+      <select id="flag-relevance">
+        <option value="high">✅ High - Very relevant</option>
+        <option value="medium">☑️ Medium - Somewhat relevant</option>
+        <option value="low">❌ Low - Not relevant</option>
       </select>
-      <label>Reason:</label>
-      <textarea id="modal-reason" placeholder="Why is this relevance incorrect?"></textarea>
-      <div class="modal-btns">
-        <button class="btn" style="background:transparent;border:1px solid var(--monday);color:var(--monday)" onclick="closeModal()">Cancel</button>
-        <button class="btn" onclick="submitFeedback()">Submit</button>
+      <label>Reason (optional)</label>
+      <textarea id="flag-reason" placeholder="Explain why the relevance should be changed..."></textarea>
+      <div class="modal-buttons">
+        <button class="modal-btn cancel" onclick="closeModal()">Cancel</button>
+        <button class="modal-btn submit" onclick="submitFlag()">Submit Report</button>
       </div>
     </div>
   </div>
@@ -211,202 +242,310 @@
     const SUPABASE_URL = 'https://kwftlkfvtglnugxsyjci.supabase.co';
     const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imt3ZnRsa2Z2dGdsbnVneHN5amNpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDc2NDAxODUsImV4cCI6MjA2MzIxNjE4NX0.9Cn1xahmF8q6pbbWQHNyQSc9fZkVvJaqTzMRZCtmb9E';
 
-    let page = 1, pageSize = 30;
-    let filters = { domain: '', relevance: '', done: '', from: '', to: '', quick: '' };
+    let currentPage = 1;
+    let totalCount = 0;
+    let currentTab = 'all';
+    let flaggingId = null;
+    let flaggedIds = new Set();
+    const perPage = 30;
 
-    async function api(endpoint, opts = {}) {
-      const params = new URLSearchParams();
-      if (opts.select) params.append('select', opts.select);
-      if (opts.order) params.append('order', opts.order);
-      if (opts.limit) params.append('limit', opts.limit);
-      if (opts.offset) params.append('offset', opts.offset);
-      if (opts.filters) opts.filters.forEach(f => params.append(f.k, f.v));
-      const res = await fetch(`${SUPABASE_URL}/rest/v1/${endpoint}?${params}`, {
-        method: opts.method || 'GET',
+    // Use Prefer: count=exact to get accurate counts without limit
+    async function fetchCount(endpoint, filter = '') {
+      const url = `${SUPABASE_URL}/rest/v1/${endpoint}?select=id${filter}`;
+      const response = await fetch(url, {
+        headers: {
+          'apikey': SUPABASE_KEY,
+          'Authorization': `Bearer ${SUPABASE_KEY}`,
+          'Prefer': 'count=exact',
+          'Range': '0-0' // Only get count, no data
+        }
+      });
+      const range = response.headers.get('content-range');
+      return parseInt(range?.split('/')[1] || '0');
+    }
+
+    async function fetchData(endpoint, params = {}, extraFilters = '') {
+      const url = new URL(`${SUPABASE_URL}/rest/v1/${endpoint}`);
+      Object.entries(params).forEach(([k, v]) => url.searchParams.append(k, v));
+
+      // Append extra filters that need duplicate keys (like done filters)
+      let finalUrl = url.toString();
+      if (extraFilters) finalUrl += extraFilters;
+
+      const response = await fetch(finalUrl, {
+        headers: {
+          'apikey': SUPABASE_KEY,
+          'Authorization': `Bearer ${SUPABASE_KEY}`,
+          'Prefer': 'count=exact'
+        }
+      });
+      const count = parseInt(response.headers.get('content-range')?.split('/')[1] || '0');
+      const data = await response.json();
+      return { data, count };
+    }
+
+    async function loadFlaggedIds() {
+      // Get ALL flagged IDs (no limit)
+      const { data } = await fetchData('relevance_feedback', { select: 'link_id', limit: '100000' });
+      flaggedIds = new Set(data.map(f => f.link_id));
+    }
+
+    async function loadCounts() {
+      // Use count=exact with Range: 0-0 to get exact counts without fetching data
+      const [allCount, doneCount, flaggedCount] = await Promise.all([
+        fetchCount('incoming_links'),
+        fetchCount('incoming_links', '&done=not.is.null&done=neq.'),
+        fetchCount('relevance_feedback')
+      ]);
+      document.getElementById('count-all').textContent = allCount.toLocaleString();
+      document.getElementById('count-done').textContent = doneCount.toLocaleString();
+      document.getElementById('count-flagged').textContent = flaggedCount.toLocaleString();
+    }
+
+    function switchTab(tab) {
+      currentTab = tab;
+      currentPage = 1;
+      document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+      document.querySelector(`[data-tab="${tab}"]`).classList.add('active');
+      loadData();
+    }
+
+    async function loadData() {
+      await loadFlaggedIds();
+      await loadCounts();
+
+      const params = {
+        select: '*',
+        order: 'uploaded_at.desc',
+        limit: perPage.toString(),
+        offset: ((currentPage - 1) * perPage).toString()
+      };
+
+      const domain = document.getElementById('filter-domain').value;
+      const relevance = document.getElementById('filter-relevance').value;
+      const status = document.getElementById('filter-status').value;
+      const from = document.getElementById('filter-from').value;
+      const to = document.getElementById('filter-to').value;
+
+      if (domain) params.domain = `eq.${domain}`;
+      if (relevance) params.relevance = `ilike.*${relevance}*`;
+      if (from) params['uploaded_at'] = `gte.${from}`;
+      if (to) params['uploaded_at'] = `lte.${to}T23:59:59`;
+
+      // Extra filters that need duplicate keys
+      let extraFilters = '';
+
+      // Tab specific filters
+      if (currentTab === 'done' || status === 'done') {
+        extraFilters = '&done=not.is.null&done=neq.';
+      }
+      if (status === 'pending') {
+        params.or = '(done.is.null,done.eq.)';
+      }
+
+      let data, count;
+
+      if (currentTab === 'flagged') {
+        // Get flagged items - first get all flagged link IDs
+        const { data: flaggedData } = await fetchData('relevance_feedback', { select: 'link_id', limit: '100000' });
+        const flaggedLinkIds = flaggedData.map(f => f.link_id);
+
+        if (flaggedLinkIds.length > 0) {
+          // Paginate the flagged IDs
+          const pageIds = flaggedLinkIds.slice((currentPage-1)*perPage, currentPage*perPage);
+          if (pageIds.length > 0) {
+            const { data: linkData } = await fetchData('incoming_links', {
+              select: '*',
+              id: `in.(${pageIds.join(',')})`,
+              order: 'uploaded_at.desc'
+            });
+            data = linkData;
+            count = flaggedLinkIds.length;
+          } else {
+            data = [];
+            count = flaggedLinkIds.length;
+          }
+        } else {
+          data = [];
+          count = 0;
+        }
+      } else {
+        const result = await fetchData('incoming_links', params, extraFilters);
+        data = result.data;
+        count = result.count;
+      }
+
+      totalCount = count;
+      renderTable(data);
+      updatePagination();
+      document.getElementById('updated-time').textContent = new Date().toLocaleTimeString();
+    }
+
+    function renderTable(data) {
+      const tbody = document.getElementById('table-body');
+
+      if (!data || data.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="11" style="text-align:center;padding:40px;color:rgba(255,255,255,0.5);">No items found</td></tr>';
+        document.getElementById('showing').textContent = 'No items';
+        return;
+      }
+
+      document.getElementById('showing').textContent = `Showing ${(currentPage-1)*perPage + 1}-${Math.min(currentPage*perPage, totalCount)} of ${totalCount.toLocaleString()} articles`;
+
+      tbody.innerHTML = data.map(r => {
+        const relClass = r.relevance?.includes('high') ? 'high' : r.relevance?.includes('medium') ? 'medium' : r.relevance?.includes('low') ? 'low' : '';
+        const relText = r.relevance?.includes('high') ? 'High' : r.relevance?.includes('medium') ? 'Medium' : r.relevance?.includes('low') ? 'Low' : '-';
+        const isDone = r.done && r.done.trim() !== '';
+        const isFlagged = flaggedIds.has(r.id);
+        const date = r.uploaded_at ? new Date(r.uploaded_at).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit' }) : '-';
+
+        return `<tr>
+          <td><span class="domain">${r.domain || '-'}</span></td>
+          <td class="title-cell">
+            <div class="title-text truncate" onclick="toggleExpand(this)">${r.title || '-'}</div>
+            ${r.title ? '<div class="expand-hint">click to expand</div>' : ''}
+          </td>
+          <td class="desc-cell">
+            <div class="desc-text truncate" onclick="toggleExpand(this)">${r.short_description || r.long_description || '-'}</div>
+          </td>
+          <td><a href="${r.source_url || '#'}" target="_blank" class="source-link">${r.source_url ? r.source_url.slice(0,40)+'...' : '-'}</a></td>
+          <td>${r.eng_blog_url ? `<a href="${r.eng_blog_url}" target="_blank" class="draft-link">📄 Draft EN</a>` : '<span class="no-draft">—</span>'}</td>
+          <td>${r.ar_blog_url ? `<a href="${r.ar_blog_url}" target="_blank" class="draft-link ar">📄 Draft AR</a>` : '<span class="no-draft">—</span>'}</td>
+          <td class="region">${r.region || '-'} ${r.region_emoji || ''}</td>
+          <td>${relClass ? `<span class="relevance ${relClass}">${relText}</span>` : '-'}</td>
+          <td><span class="status ${isDone ? 'done' : 'pending'}">${isDone ? '✓ Done' : '○ Pending'}</span></td>
+          <td class="date">${date}</td>
+          <td class="actions">
+            <button class="action-btn done-btn ${isDone ? 'active' : ''}" onclick="toggleDone('${r.id}', ${isDone})" title="Mark as done">
+              ${isDone ? '✓ Done' : '☐ Mark Done'}
+            </button>
+            <button class="action-btn flag-btn ${isFlagged ? 'active' : ''}" onclick="openFlagModal('${r.id}', '${r.relevance || ''}')" title="Report issue">
+              ${isFlagged ? '🚩 Flagged' : '⚑ Flag Issue'}
+            </button>
+          </td>
+        </tr>`;
+      }).join('');
+    }
+
+    function toggleExpand(el) {
+      el.classList.toggle('truncate');
+      el.classList.toggle('expanded');
+    }
+
+    async function toggleDone(id, currentlyDone) {
+      const newValue = currentlyDone ? '' : new Date().toISOString();
+      await fetch(`${SUPABASE_URL}/rest/v1/incoming_links?id=eq.${id}`, {
+        method: 'PATCH',
         headers: {
           'apikey': SUPABASE_KEY,
           'Authorization': `Bearer ${SUPABASE_KEY}`,
           'Content-Type': 'application/json',
-          'Prefer': opts.count ? 'count=exact' : opts.prefer || ''
+          'Prefer': 'return=minimal'
         },
-        body: opts.body ? JSON.stringify(opts.body) : undefined
+        body: JSON.stringify({ done: newValue })
       });
-      const count = res.headers.get('content-range')?.split('/')[1];
-      const data = await res.json();
-      return { data, count: count ? +count : null, ok: res.ok };
+      loadData();
     }
 
-    const fmt = n => n?.toLocaleString() || '0';
-    const fmtDate = d => d ? new Date(d).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit' }) : '-';
-
-    function buildFilters() {
-      const f = [];
-      if (filters.domain) f.push({ k: 'domain', v: `eq.${filters.domain}` });
-      if (filters.relevance === 'high') f.push({ k: 'relevance', v: 'like.*high*' });
-      else if (filters.relevance === 'medium') f.push({ k: 'relevance', v: 'like.*medium*' });
-      else if (filters.relevance === 'low') f.push({ k: 'relevance', v: 'like.*low*' });
-      else if (filters.relevance === 'null') f.push({ k: 'relevance', v: 'is.null' });
-      if (filters.done === 'done') f.push({ k: 'done', v: 'neq.' });
-      else if (filters.done === 'pending') f.push({ k: 'done', v: 'is.null' });
-      if (filters.from) f.push({ k: 'uploaded_at', v: `gte.${filters.from}T00:00:00` });
-      if (filters.to) f.push({ k: 'uploaded_at', v: `lte.${filters.to}T23:59:59` });
-      if (filters.quick === 'drafts') f.push({ k: 'eng_blog_url', v: 'neq.' });
-      return f;
-    }
-
-    function applyFilters() {
-      filters.domain = document.getElementById('filter-domain').value;
-      filters.relevance = document.getElementById('filter-relevance').value;
-      filters.done = document.getElementById('filter-done').value;
-      filters.from = document.getElementById('filter-from').value;
-      filters.to = document.getElementById('filter-to').value;
-      page = 1;
-      loadTable();
-    }
-
-    function quickFilter(type) {
-      document.querySelectorAll('.quick-btn').forEach(b => b.classList.remove('active'));
-      if (type === 'clear') {
-        filters = { domain: '', relevance: '', done: '', from: '', to: '', quick: '' };
-        ['filter-domain', 'filter-relevance', 'filter-done', 'filter-from', 'filter-to'].forEach(id => document.getElementById(id).value = '');
-      } else {
-        event.target.classList.add('active');
-        const now = new Date();
-        if (type === '3h') { filters.from = new Date(now - 3*3600000).toISOString().split('T')[0]; filters.to = now.toISOString().split('T')[0]; }
-        else if (type === '24h') { filters.from = new Date(now - 24*3600000).toISOString().split('T')[0]; filters.to = now.toISOString().split('T')[0]; }
-        else if (type === '7d') { filters.from = new Date(now - 7*24*3600000).toISOString().split('T')[0]; filters.to = now.toISOString().split('T')[0]; }
-        else if (type === 'high') { filters.relevance = 'high'; document.getElementById('filter-relevance').value = 'high'; }
-        else if (type === 'drafts') { filters.quick = 'drafts'; }
-      }
-      page = 1;
-      loadTable();
-    }
-
-    async function loadDomains() {
-      const { data } = await api('incoming_links', { select: 'domain', limit: 70000 });
-      const domains = [...new Set(data.map(d => d.domain).filter(Boolean))].sort();
-      document.getElementById('filter-domain').innerHTML = '<option value="">All</option>' + domains.map(d => `<option value="${d}">${d}</option>`).join('');
-    }
-
-    async function loadTable() {
-      const tbody = document.getElementById('table-body');
-      tbody.innerHTML = '<tr><td colspan="11" class="loading"><div class="spinner"></div>Loading...</td></tr>';
-
-      const offset = (page - 1) * pageSize;
-      const { data, count } = await api('incoming_links', {
-        select: 'id,domain,url,title,description,region,relevance,done,uploaded_at,eng_blog_url,ar_blog_url',
-        order: 'uploaded_at.desc',
-        limit: pageSize,
-        offset,
-        count: true,
-        filters: buildFilters()
-      });
-
-      const totalPages = Math.ceil((count || 0) / pageSize);
-      document.getElementById('table-info').textContent = `Showing ${offset + 1}-${Math.min(offset + pageSize, count || 0)} of ${fmt(count)} articles`;
-      document.getElementById('page-info').textContent = `Page ${page} / ${totalPages || 1}`;
-      document.getElementById('prev-btn').disabled = page === 1;
-      document.getElementById('next-btn').disabled = page >= totalPages;
-
-      if (!data.length) {
-        tbody.innerHTML = '<tr><td colspan="11" style="text-align:center;padding:50px;color:rgba(255,255,255,0.4);">No articles found</td></tr>';
-        return;
-      }
-
-      tbody.innerHTML = data.map(r => `
-        <tr class="${r.done ? 'done-row' : ''}">
-          <td class="domain-cell">${r.domain || '-'}</td>
-          <td class="expandable" onclick="toggleText(this)">
-            <div class="expandable-text">${r.title || '-'}</div>
-            ${r.title?.length > 60 ? '<div class="expand-hint">click to expand</div>' : ''}
-          </td>
-          <td class="expandable" onclick="toggleText(this)">
-            <div class="expandable-text">${r.description || '-'}</div>
-            ${r.description?.length > 80 ? '<div class="expand-hint">click to expand</div>' : ''}
-          </td>
-          <td><a href="${r.url}" target="_blank" class="url-link" title="${r.url}">${r.url?.substring(0, 40) || '-'}...</a></td>
-          <td>
-            ${r.eng_blog_url
-              ? `<a href="${r.eng_blog_url}" target="_blank" class="draft-link">📄 Draft EN</a>`
-              : '<span class="no-draft">—</span>'}
-          </td>
-          <td>
-            ${r.ar_blog_url
-              ? `<a href="${r.ar_blog_url}" target="_blank" class="draft-link ar">📄 Draft AR</a>`
-              : '<span class="no-draft">—</span>'}
-          </td>
-          <td>${r.region || '-'}</td>
-          <td>${getBadge(r.relevance)}</td>
-          <td><span class="badge ${r.done ? 'done' : 'pending'}">${r.done ? '✓ Done' : '○ Pending'}</span></td>
-          <td style="white-space:nowrap;font-size:11px;color:rgba(255,255,255,0.6)">${fmtDate(r.uploaded_at)}</td>
-          <td class="actions-cell">
-            <button class="btn btn-small btn-done ${r.done ? 'active' : ''}" onclick="toggleDone('${r.id}', ${!r.done})" title="Mark as done">${r.done ? '✓' : '○'}</button>
-            <button class="btn btn-small btn-flag" onclick="openModal('${r.id}', '${r.relevance || ''}')" title="Report wrong relevance">⚑</button>
-          </td>
-        </tr>
-      `).join('');
-
-      document.getElementById('last-update').textContent = 'Updated: ' + new Date().toLocaleTimeString();
-    }
-
-    function getBadge(r) {
-      if (!r) return '<span class="badge pending">—</span>';
-      if (r.includes('high')) return '<span class="badge high">High</span>';
-      if (r.includes('medium')) return '<span class="badge medium">Medium</span>';
-      return '<span class="badge low">Low</span>';
-    }
-
-    function toggleText(el) {
-      const text = el.querySelector('.expandable-text');
-      const hint = el.querySelector('.expand-hint');
-      if (text) {
-        text.classList.toggle('expanded');
-        if (hint) hint.textContent = text.classList.contains('expanded') ? 'click to collapse' : 'click to expand';
-      }
-    }
-
-    async function toggleDone(id, newState) {
-      await api(`incoming_links?id=eq.${id}`, { method: 'PATCH', body: { done: newState ? 'done' : null }, prefer: 'return=minimal' });
-      loadTable();
-    }
-
-    function openModal(id, current) {
-      document.getElementById('modal-id').value = id;
-      document.getElementById('modal-current').textContent = current || 'Not Set';
-      document.getElementById('modal-reason').value = '';
-      document.getElementById('modal').classList.add('active');
+    function openFlagModal(id, currentRelevance) {
+      flaggingId = id;
+      document.getElementById('flag-modal').classList.add('show');
     }
 
     function closeModal() {
-      document.getElementById('modal').classList.remove('active');
+      document.getElementById('flag-modal').classList.remove('show');
+      flaggingId = null;
     }
 
-    async function submitFeedback() {
-      const { ok } = await api('relevance_feedback', {
+    async function submitFlag() {
+      if (!flaggingId) return;
+      const suggested = document.getElementById('flag-relevance').value;
+      const reason = document.getElementById('flag-reason').value;
+
+      await fetch(`${SUPABASE_URL}/rest/v1/relevance_feedback`, {
         method: 'POST',
-        body: {
-          link_id: document.getElementById('modal-id').value,
-          original_relevance: document.getElementById('modal-current').textContent,
-          suggested_relevance: document.getElementById('modal-relevance').value,
-          reason: document.getElementById('modal-reason').value
+        headers: {
+          'apikey': SUPABASE_KEY,
+          'Authorization': `Bearer ${SUPABASE_KEY}`,
+          'Content-Type': 'application/json',
+          'Prefer': 'return=minimal'
         },
-        prefer: 'return=minimal'
+        body: JSON.stringify({
+          link_id: flaggingId,
+          suggested_relevance: suggested,
+          reason: reason
+        })
       });
-      if (ok) { closeModal(); alert('Feedback submitted!'); }
-      else { alert('Error submitting feedback'); }
+
+      closeModal();
+      document.getElementById('flag-reason').value = '';
+      loadData();
     }
 
-    function prevPage() { if (page > 1) { page--; loadTable(); } }
-    function nextPage() { page++; loadTable(); }
-
-    async function refreshData() {
-      await loadTable();
+    function quickFilter(type) {
+      clearFilters();
+      const now = new Date();
+      if (type === '3h') {
+        const d = new Date(now - 3*60*60*1000);
+        document.getElementById('filter-from').value = d.toISOString().split('T')[0];
+      } else if (type === '24h') {
+        const d = new Date(now - 24*60*60*1000);
+        document.getElementById('filter-from').value = d.toISOString().split('T')[0];
+      } else if (type === '7d') {
+        const d = new Date(now - 7*24*60*60*1000);
+        document.getElementById('filter-from').value = d.toISOString().split('T')[0];
+      } else if (type === 'high') {
+        document.getElementById('filter-relevance').value = 'high';
+      } else if (type === 'drafts') {
+        // Will be handled in loadData
+      }
+      currentPage = 1;
+      loadData();
     }
 
-    // Init
+    function clearFilters() {
+      document.getElementById('filter-domain').value = '';
+      document.getElementById('filter-relevance').value = '';
+      document.getElementById('filter-status').value = '';
+      document.getElementById('filter-from').value = '';
+      document.getElementById('filter-to').value = '';
+      currentPage = 1;
+    }
+
+    function changePage(dir) {
+      currentPage += dir;
+      loadData();
+    }
+
+    function updatePagination() {
+      const totalPages = Math.ceil(totalCount / perPage);
+      document.getElementById('page-info').textContent = `Page ${currentPage} of ${totalPages || 1}`;
+      document.getElementById('prev-btn').disabled = currentPage <= 1;
+      document.getElementById('next-btn').disabled = currentPage >= totalPages;
+    }
+
+    async function loadDomains() {
+      // Get all unique domains using count with grouping not available, so fetch all domain values
+      const { data } = await fetchData('incoming_links', { select: 'domain', limit: '100000' });
+      const domains = [...new Set(data.map(d => d.domain).filter(Boolean))].sort();
+      const select = document.getElementById('filter-domain');
+      domains.forEach(d => {
+        const opt = document.createElement('option');
+        opt.value = d;
+        opt.textContent = d;
+        select.appendChild(opt);
+      });
+    }
+
+    // Event listeners for filters
+    ['filter-domain', 'filter-relevance', 'filter-status', 'filter-from', 'filter-to'].forEach(id => {
+      document.getElementById(id).addEventListener('change', () => { currentPage = 1; loadData(); });
+    });
+
+    // Initialize
     loadDomains();
-    loadTable();
-    setInterval(loadTable, 120000);
+    loadData();
+    setInterval(loadData, 120000);
   </script>
 </body>
 </html>
