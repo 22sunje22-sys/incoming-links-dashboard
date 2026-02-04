@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Statistics - Incoming Links</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+  <style>
+    :root { --storm: #0A181C; --monday: #79E2FF; --day: #C7F8BA; --suede: #00A5D3; --electro: #221327; }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: 'Inter', sans-serif; background: linear-gradient(135deg, var(--storm) 0%, var(--electro) 100%); min-height: 100vh; color: white; }
+    .container { max-width: 1400px; margin: 0 auto; padding: 24px; }
+
+    .nav { display: flex; gap: 12px; margin-bottom: 32px; }
+    .nav a { padding: 12px 24px; background: rgba(255,255,255,0.1); border-radius: 8px; color: white; text-decoration: none; font-weight: 600; font-size: 14px; transition: all 0.2s; }
+    .nav a:hover { background: rgba(255,255,255,0.2); }
+    .nav a.active { background: var(--monday); color: var(--storm); }
+
+    .header { margin-bottom: 40px; }
+    .header h1 { font-size: 36px; font-weight: 800; color: var(--monday); text-transform: uppercase; letter-spacing: -1px; }
+    .header p { color: rgba(255,255,255,0.6); margin-top: 8px; font-size: 16px; }
+
+    .section-title { font-size: 14px; font-weight: 700; color: var(--monday); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 20px; display: flex; align-items: center; gap: 10px; }
+    .section-title::before { content: ''; width: 4px; height: 24px; background: var(--monday); border-radius: 2px; }
+
+    .stats-grid { display: grid; grid-template-columns: repeat(6, 1fr); gap: 16px; margin-bottom: 40px; }
+    .stat-card { background: rgba(255,255,255,0.05); backdrop-filter: blur(10px); border-radius: 16px; padding: 24px; border: 1px solid rgba(255,255,255,0.1); transition: all 0.3s; text-align: center; }
+    .stat-card:hover { transform: translateY(-4px); border-color: var(--monday); box-shadow: 0 8px 32px rgba(121,226,255,0.1); }
+    .stat-label { font-size: 11px; font-weight: 600; color: rgba(255,255,255,0.5); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 12px; }
+    .stat-value { font-size: 36px; font-weight: 800; }
+    .stat-value.cyan { color: var(--monday); }
+    .stat-value.green { color: var(--day); }
+    .stat-value.teal { color: var(--suede); }
+    .stat-value.white { color: white; }
+    .stat-value.red { color: #ff6b6b; }
+
+    .article-stats { background: rgba(121,226,255,0.05); border: 2px solid rgba(121,226,255,0.2); border-radius: 20px; padding: 32px; margin-bottom: 40px; }
+    .article-stats-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 24px; }
+    .article-stat { text-align: center; padding: 24px; background: rgba(0,0,0,0.3); border-radius: 16px; }
+    .article-stat-value { font-size: 48px; font-weight: 800; color: var(--day); }
+    .article-stat-label { font-size: 13px; color: rgba(255,255,255,0.7); margin-top: 8px; font-weight: 500; }
+    .article-stat-percent { font-size: 16px; color: var(--monday); margin-top: 8px; font-weight: 600; }
+
+    .charts-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-bottom: 40px; }
+    .chart-card { background: rgba(255,255,255,0.05); border-radius: 20px; padding: 28px; border: 1px solid rgba(255,255,255,0.1); }
+    .chart-card.full-width { grid-column: span 2; }
+    .chart-title { font-size: 14px; font-weight: 700; color: var(--monday); margin-bottom: 20px; text-transform: uppercase; letter-spacing: 0.5px; }
+    .chart-container { height: 320px; position: relative; }
+
+    .domains-list { background: rgba(255,255,255,0.05); border-radius: 20px; padding: 28px; border: 1px solid rgba(255,255,255,0.1); }
+    .domain-row { display: flex; justify-content: space-between; align-items: center; padding: 16px 0; border-bottom: 1px solid rgba(255,255,255,0.05); }
+    .domain-row:last-child { border-bottom: none; }
+    .domain-name { font-weight: 600; color: white; }
+    .domain-count { font-size: 14px; padding: 6px 14px; background: rgba(121,226,255,0.1); border-radius: 20px; color: var(--monday); font-weight: 600; }
+
+    .footer { text-align: center; padding: 32px; font-size: 12px; color: rgba(255,255,255,0.3); }
+    .refresh-time { font-size: 14px; color: rgba(255,255,255,0.5); margin-top: 8px; }
+
+    @media (max-width: 1200px) { .stats-grid { grid-template-columns: repeat(3, 1fr); } .article-stats-grid { grid-template-columns: repeat(3, 1fr); } }
+    @media (max-width: 768px) { .charts-grid { grid-template-columns: 1fr; } .chart-card.full-width { grid-column: span 1; } .stats-grid { grid-template-columns: repeat(2, 1fr); } .article-stats-grid { grid-template-columns: repeat(2, 1fr); } }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <nav class="nav">
+      <a href="statistics.html" class="active">📊 Statistics</a>
+      <a href="workspace.html">📝 Workspace</a>
+    </nav>
+
+    <div class="header">
+      <h1>Statistics Dashboard</h1>
+      <p>Overview of incoming links and article performance</p>
+    </div>
+
+    <div class="section-title">Links Overview</div>
+    <div class="stats-grid">
+      <div class="stat-card"><div class="stat-label">Total Links</div><div class="stat-value cyan" id="stat-total">-</div></div>
+      <div class="stat-card"><div class="stat-label">High Relevance</div><div class="stat-value green" id="stat-high">-</div></div>
+      <div class="stat-card"><div class="stat-label">Medium</div><div class="stat-value teal" id="stat-medium">-</div></div>
+      <div class="stat-card"><div class="stat-label">Low</div><div class="stat-value red" id="stat-low">-</div></div>
+      <div class="stat-card"><div class="stat-label">Unique Domains</div><div class="stat-value white" id="stat-domains">-</div></div>
+      <div class="stat-card"><div class="stat-label">Completed</div><div class="stat-value cyan" id="stat-done">-</div></div>
+    </div>
+
+    <div class="section-title">Article Performance</div>
+    <div class="article-stats">
+      <div class="article-stats-grid">
+        <div class="article-stat">
+          <div class="article-stat-value" id="art-total">-</div>
+          <div class="article-stat-label">Total Drafts</div>
+        </div>
+        <div class="article-stat">
+          <div class="article-stat-value" id="art-published">-</div>
+          <div class="article-stat-label">Published</div>
+          <div class="article-stat-percent" id="art-published-pct">-</div>
+        </div>
+        <div class="article-stat">
+          <div class="article-stat-value" id="art-rejected">-</div>
+          <div class="article-stat-label">Rejected</div>
+          <div class="article-stat-percent" id="art-rejected-pct">-</div>
+        </div>
+        <div class="article-stat">
+          <div class="article-stat-value" id="art-conversion">-</div>
+          <div class="article-stat-label">Conversion</div>
+          <div class="article-stat-percent">High → Draft</div>
+        </div>
+        <div class="article-stat">
+          <div class="article-stat-value" id="art-avg">-</div>
+          <div class="article-stat-label">Avg/Day</div>
+          <div class="article-stat-percent">Last 30 days</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="section-title">Analytics</div>
+    <div class="charts-grid">
+      <div class="chart-card full-width">
+        <div class="chart-title">Links Over Time (Last 30 Days)</div>
+        <div class="chart-container"><canvas id="timeChart"></canvas></div>
+      </div>
+      <div class="chart-card">
+        <div class="chart-title">Relevance Distribution</div>
+        <div class="chart-container"><canvas id="relevanceChart"></canvas></div>
+      </div>
+      <div class="chart-card">
+        <div class="chart-title">Top Domains</div>
+        <div class="chart-container"><canvas id="domainsChart"></canvas></div>
+      </div>
+    </div>
+
+    <div class="section-title">All Domains</div>
+    <div class="domains-list" id="domains-list"></div>
+
+    <div class="footer">
+      <div>Incoming Links Dashboard</div>
+      <div class="refresh-time">Last updated: <span id="last-update">-</span> • Auto-refresh every 2 min</div>
+    </div>
+  </div>
+
+  <script>
+    const SUPABASE_URL = 'https://kwftlkfvtglnugxsyjci.supabase.co';
+    const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imt3ZnRsa2Z2dGdsbnVneHN5amNpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDc2NDAxODUsImV4cCI6MjA2MzIxNjE4NX0.9Cn1xahmF8q6pbbWQHNyQSc9fZkVvJaqTzMRZCtmb9E';
+    let charts = {};
+
+    async function fetchData(endpoint, options = {}) {
+      const params = new URLSearchParams();
+      if (options.select) params.append('select', options.select);
+      if (options.order) params.append('order', options.order);
+      if (options.limit) params.append('limit', options.limit);
+      const response = await fetch(`${SUPABASE_URL}/rest/v1/${endpoint}?${params}`, {
+        headers: { 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${SUPABASE_KEY}` }
+      });
+      return response.json();
+    }
+
+    const fmt = n => n?.toLocaleString() || '0';
+
+    async function loadStats() {
+      const data = await fetchData('incoming_links', { select: 'domain,relevance,done,uploaded_at,eng_blog_url', limit: 70000, order: 'uploaded_at.desc' });
+
+      const total = data.length;
+      const high = data.filter(d => d.relevance?.includes('high')).length;
+      const medium = data.filter(d => d.relevance?.includes('medium')).length;
+      const low = data.filter(d => d.relevance?.includes('low')).length;
+      const domains = {};
+      data.forEach(d => { if (d.domain) domains[d.domain] = (domains[d.domain] || 0) + 1; });
+      const drafts = data.filter(d => d.eng_blog_url).length;
+      const done = data.filter(d => d.done && d.done.trim() !== '').length;
+
+      document.getElementById('stat-total').textContent = fmt(total);
+      document.getElementById('stat-high').textContent = fmt(high);
+      document.getElementById('stat-medium').textContent = fmt(medium);
+      document.getElementById('stat-low').textContent = fmt(low);
+      document.getElementById('stat-domains').textContent = fmt(Object.keys(domains).length);
+      document.getElementById('stat-done').textContent = fmt(done);
+
+      document.getElementById('art-total').textContent = fmt(drafts);
+      document.getElementById('art-published').textContent = fmt(done);
+      document.getElementById('art-published-pct').textContent = drafts > 0 ? `${((done/drafts)*100).toFixed(1)}%` : '-';
+
+      try {
+        const feedback = await fetchData('relevance_feedback', { select: 'id', limit: 10000 });
+        document.getElementById('art-rejected').textContent = fmt(feedback.length);
+        document.getElementById('art-rejected-pct').textContent = (high+medium) > 0 ? `${((feedback.length/(high+medium))*100).toFixed(1)}%` : '-';
+      } catch { document.getElementById('art-rejected').textContent = '0'; }
+
+      document.getElementById('art-conversion').textContent = high > 0 ? `${((drafts/high)*100).toFixed(1)}%` : '0%';
+
+      const thirtyDaysAgo = new Date(Date.now() - 30*24*60*60*1000);
+      const last30 = data.filter(d => new Date(d.uploaded_at) >= thirtyDaysAgo).length;
+      document.getElementById('art-avg').textContent = Math.round(last30/30);
+
+      // Domains list
+      const sortedDomains = Object.entries(domains).sort((a,b) => b[1]-a[1]);
+      document.getElementById('domains-list').innerHTML = sortedDomains.map(([name, count]) =>
+        `<div class="domain-row"><span class="domain-name">${name}</span><span class="domain-count">${fmt(count)} links</span></div>`
+      ).join('');
+
+      updateCharts(data, domains);
+      document.getElementById('last-update').textContent = new Date().toLocaleTimeString();
+    }
+
+    function updateCharts(data, domains) {
+      Chart.defaults.color = 'rgba(255,255,255,0.6)';
+      Chart.defaults.borderColor = 'rgba(255,255,255,0.1)';
+
+      const byDate = {};
+      data.forEach(d => { const date = d.uploaded_at?.split('T')[0]; if (date) byDate[date] = (byDate[date] || 0) + 1; });
+      const sortedDates = Object.keys(byDate).sort().slice(-30);
+
+      if (charts.time) charts.time.destroy();
+      charts.time = new Chart(document.getElementById('timeChart'), {
+        type: 'line',
+        data: {
+          labels: sortedDates.map(d => new Date(d).toLocaleDateString('en-GB', { day: '2-digit', month: 'short' })),
+          datasets: [{ label: 'Links', data: sortedDates.map(d => byDate[d]), borderColor: '#79E2FF', backgroundColor: 'rgba(121,226,255,0.15)', fill: true, tension: 0.4, pointRadius: 4, pointBackgroundColor: '#79E2FF' }]
+        },
+        options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true } } }
+      });
+
+      const high = data.filter(d => d.relevance?.includes('high')).length;
+      const medium = data.filter(d => d.relevance?.includes('medium')).length;
+      const low = data.filter(d => d.relevance?.includes('low')).length;
+      const notSet = data.length - high - medium - low;
+
+      if (charts.relevance) charts.relevance.destroy();
+      charts.relevance = new Chart(document.getElementById('relevanceChart'), {
+        type: 'doughnut',
+        data: { labels: ['High', 'Medium', 'Low', 'Not Set'], datasets: [{ data: [high, medium, low, notSet], backgroundColor: ['#C7F8BA', '#79E2FF', '#ff6b6b', 'rgba(255,255,255,0.15)'], borderWidth: 0 }] },
+        options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom' } } }
+      });
+
+      const topDomains = Object.entries(domains).sort((a,b) => b[1]-a[1]).slice(0, 10);
+      if (charts.domains) charts.domains.destroy();
+      charts.domains = new Chart(document.getElementById('domainsChart'), {
+        type: 'bar',
+        data: { labels: topDomains.map(d => d[0].length > 15 ? d[0].slice(0,15)+'...' : d[0]), datasets: [{ data: topDomains.map(d => d[1]), backgroundColor: '#79E2FF', borderRadius: 6 }] },
+        options: { responsive: true, maintainAspectRatio: false, indexAxis: 'y', plugins: { legend: { display: false } } }
+      });
+    }
+
+    loadStats();
+    setInterval(loadStats, 120000);
+  </script>
+</body>
+</html>
