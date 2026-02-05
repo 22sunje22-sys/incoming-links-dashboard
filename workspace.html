@@ -84,7 +84,7 @@
 
     .date { font-size: 12px; color: rgba(255,255,255,0.5); white-space: nowrap; }
 
-    /* Action buttons - more obvious */
+    /* Action buttons */
     .actions { display: flex; gap: 8px; flex-wrap: wrap; }
     .action-btn { padding: 8px 14px; border: none; border-radius: 8px; font-size: 12px; font-weight: 600; cursor: pointer; font-family: 'Inter', sans-serif; transition: all 0.2s; display: flex; align-items: center; gap: 6px; }
     .action-btn.done-btn { background: rgba(199,248,186,0.15); color: var(--day); border: 1px solid rgba(199,248,186,0.3); }
@@ -146,24 +146,12 @@
 
     <div class="filters">
       <div class="filter-group">
-        <span class="filter-label">Domain</span>
-        <select id="filter-domain"><option value="">All</option></select>
-      </div>
-      <div class="filter-group">
         <span class="filter-label">Relevance</span>
         <select id="filter-relevance">
           <option value="">All</option>
           <option value="high">✅ High</option>
           <option value="medium">☑️ Medium</option>
           <option value="low">❌ Low</option>
-        </select>
-      </div>
-      <div class="filter-group">
-        <span class="filter-label">Status</span>
-        <select id="filter-status">
-          <option value="">All</option>
-          <option value="pending">Pending</option>
-          <option value="done">Done</option>
         </select>
       </div>
       <div class="filter-group">
@@ -179,7 +167,6 @@
         <button class="quick-btn" onclick="quickFilter('24h')">Last 24h</button>
         <button class="quick-btn" onclick="quickFilter('7d')">Last 7d</button>
         <button class="quick-btn" onclick="quickFilter('high')">High Only</button>
-        <button class="quick-btn" onclick="quickFilter('drafts')">With Drafts</button>
         <button class="quick-btn" onclick="clearFilters()">Clear</button>
       </div>
     </div>
@@ -239,8 +226,8 @@
   </div>
 
   <script>
-    const SUPABASE_URL = 'https://kwftlkfvtglnugxsyjci.supabase.co';
-    const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imt3ZnRsa2Z2dGdsbnVneHN5amNpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDc2NDAxODUsImV4cCI6MjA2MzIxNjE4NX0.9Cn1xahmF8q6pbbWQHNyQSc9fZkVvJaqTzMRZCtmb9E';
+    // NO SUPABASE KEY EXPOSED - All calls go through secure API proxy
+    const API_BASE = '/api';
 
     let currentPage = 1;
     let totalCount = 0;
@@ -249,53 +236,45 @@
     let flaggedIds = new Set();
     const perPage = 30;
 
-    // Use Prefer: count=exact to get accurate counts without limit
-    async function fetchCount(endpoint, filter = '') {
-      const url = `${SUPABASE_URL}/rest/v1/${endpoint}?select=id${filter}`;
-      const response = await fetch(url, {
-        headers: {
-          'apikey': SUPABASE_KEY,
-          'Authorization': `Bearer ${SUPABASE_KEY}`,
-          'Prefer': 'count=exact',
-          'Range': '0-0' // Only get count, no data
-        }
-      });
-      const range = response.headers.get('content-range');
-      return parseInt(range?.split('/')[1] || '0');
-    }
-
-    async function fetchData(endpoint, params = {}, extraFilters = '') {
-      const url = new URL(`${SUPABASE_URL}/rest/v1/${endpoint}`);
-      Object.entries(params).forEach(([k, v]) => url.searchParams.append(k, v));
-
-      // Append extra filters that need duplicate keys (like done filters)
-      let finalUrl = url.toString();
-      if (extraFilters) finalUrl += extraFilters;
-
-      const response = await fetch(finalUrl, {
-        headers: {
-          'apikey': SUPABASE_KEY,
-          'Authorization': `Bearer ${SUPABASE_KEY}`,
-          'Prefer': 'count=exact'
-        }
-      });
-      const count = parseInt(response.headers.get('content-range')?.split('/')[1] || '0');
+    // Fetch count from secure API
+    async function fetchCount(type) {
+      const response = await fetch(`${API_BASE}/stats?type=${type}`);
       const data = await response.json();
-      return { data, count };
+      return data.count || 0;
     }
 
-    async function loadFlaggedIds() {
-      // Get ALL flagged IDs (no limit)
-      const { data } = await fetchData('relevance_feedback', { select: 'link_id', limit: '100000' });
-      flaggedIds = new Set(data.map(f => f.link_id));
+    // Fetch links from secure API
+    async function fetchLinks(options = {}) {
+      const params = new URLSearchParams(options);
+      const response = await fetch(`${API_BASE}/links?${params}`);
+      return response.json();
+    }
+
+    // Mark as done through secure API
+    async function markDone(id) {
+      const response = await fetch(`${API_BASE}/mark-done`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id })
+      });
+      return response.json();
+    }
+
+    // Flag issue through secure API
+    async function flagIssue(data) {
+      const response = await fetch(`${API_BASE}/flag-issue`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data)
+      });
+      return response.json();
     }
 
     async function loadCounts() {
-      // Use count=exact with Range: 0-0 to get exact counts without fetching data
       const [allCount, doneCount, flaggedCount] = await Promise.all([
-        fetchCount('incoming_links'),
-        fetchCount('incoming_links', '&done=not.is.null&done=neq.'),
-        fetchCount('relevance_feedback')
+        fetchCount('pending'),
+        fetchCount('done'),
+        fetchCount('flagged')
       ]);
       document.getElementById('count-all').textContent = allCount.toLocaleString();
       document.getElementById('count-done').textContent = doneCount.toLocaleString();
@@ -311,71 +290,26 @@
     }
 
     async function loadData() {
-      await loadFlaggedIds();
       await loadCounts();
 
-      const params = {
-        select: '*',
-        order: 'uploaded_at.desc',
-        limit: perPage.toString(),
-        offset: ((currentPage - 1) * perPage).toString()
-      };
-
-      const domain = document.getElementById('filter-domain').value;
       const relevance = document.getElementById('filter-relevance').value;
-      const status = document.getElementById('filter-status').value;
       const from = document.getElementById('filter-from').value;
       const to = document.getElementById('filter-to').value;
 
-      if (domain) params.domain = `eq.${domain}`;
-      if (relevance) params.relevance = `ilike.*${relevance}*`;
-      if (from) params['uploaded_at'] = `gte.${from}`;
-      if (to) params['uploaded_at'] = `lte.${to}T23:59:59`;
+      const params = {
+        tab: currentTab,
+        page: currentPage - 1,
+        limit: perPage
+      };
 
-      // Extra filters that need duplicate keys
-      let extraFilters = '';
+      if (relevance) params.relevance = relevance;
+      if (from) params.dateFrom = from;
+      if (to) params.dateTo = to;
 
-      // Tab specific filters
-      if (currentTab === 'done' || status === 'done') {
-        extraFilters = '&done=not.is.null&done=neq.';
-      }
-      if (status === 'pending') {
-        params.or = '(done.is.null,done.eq.)';
-      }
+      const result = await fetchLinks(params);
+      const data = result.data || [];
+      totalCount = result.total || 0;
 
-      let data, count;
-
-      if (currentTab === 'flagged') {
-        // Get flagged items - first get all flagged link IDs
-        const { data: flaggedData } = await fetchData('relevance_feedback', { select: 'link_id', limit: '100000' });
-        const flaggedLinkIds = flaggedData.map(f => f.link_id);
-
-        if (flaggedLinkIds.length > 0) {
-          // Paginate the flagged IDs
-          const pageIds = flaggedLinkIds.slice((currentPage-1)*perPage, currentPage*perPage);
-          if (pageIds.length > 0) {
-            const { data: linkData } = await fetchData('incoming_links', {
-              select: '*',
-              id: `in.(${pageIds.join(',')})`,
-              order: 'uploaded_at.desc'
-            });
-            data = linkData;
-            count = flaggedLinkIds.length;
-          } else {
-            data = [];
-            count = flaggedLinkIds.length;
-          }
-        } else {
-          data = [];
-          count = 0;
-        }
-      } else {
-        const result = await fetchData('incoming_links', params, extraFilters);
-        data = result.data;
-        count = result.count;
-      }
-
-      totalCount = count;
       renderTable(data);
       updatePagination();
       document.getElementById('updated-time').textContent = new Date().toLocaleTimeString();
@@ -396,7 +330,7 @@
         const relClass = r.relevance?.includes('high') ? 'high' : r.relevance?.includes('medium') ? 'medium' : r.relevance?.includes('low') ? 'low' : '';
         const relText = r.relevance?.includes('high') ? 'High' : r.relevance?.includes('medium') ? 'Medium' : r.relevance?.includes('low') ? 'Low' : '-';
         const isDone = r.done && r.done.trim() !== '';
-        const isFlagged = flaggedIds.has(r.id);
+        const isFlagged = r.flagged === true;
         const date = r.uploaded_at ? new Date(r.uploaded_at).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit' }) : '-';
 
         return `<tr>
@@ -433,17 +367,9 @@
     }
 
     async function toggleDone(id, currentlyDone) {
-      const newValue = currentlyDone ? '' : new Date().toISOString();
-      await fetch(`${SUPABASE_URL}/rest/v1/incoming_links?id=eq.${id}`, {
-        method: 'PATCH',
-        headers: {
-          'apikey': SUPABASE_KEY,
-          'Authorization': `Bearer ${SUPABASE_KEY}`,
-          'Content-Type': 'application/json',
-          'Prefer': 'return=minimal'
-        },
-        body: JSON.stringify({ done: newValue })
-      });
+      if (!currentlyDone) {
+        await markDone(id);
+      }
       loadData();
     }
 
@@ -462,19 +388,11 @@
       const suggested = document.getElementById('flag-relevance').value;
       const reason = document.getElementById('flag-reason').value;
 
-      await fetch(`${SUPABASE_URL}/rest/v1/relevance_feedback`, {
-        method: 'POST',
-        headers: {
-          'apikey': SUPABASE_KEY,
-          'Authorization': `Bearer ${SUPABASE_KEY}`,
-          'Content-Type': 'application/json',
-          'Prefer': 'return=minimal'
-        },
-        body: JSON.stringify({
-          link_id: flaggingId,
-          suggested_relevance: suggested,
-          reason: reason
-        })
+      await flagIssue({
+        link_id: flaggingId,
+        issue_type: 'wrong_relevance',
+        correct_relevance: suggested,
+        notes: reason
       });
 
       closeModal();
@@ -496,17 +414,13 @@
         document.getElementById('filter-from').value = d.toISOString().split('T')[0];
       } else if (type === 'high') {
         document.getElementById('filter-relevance').value = 'high';
-      } else if (type === 'drafts') {
-        // Will be handled in loadData
       }
       currentPage = 1;
       loadData();
     }
 
     function clearFilters() {
-      document.getElementById('filter-domain').value = '';
       document.getElementById('filter-relevance').value = '';
-      document.getElementById('filter-status').value = '';
       document.getElementById('filter-from').value = '';
       document.getElementById('filter-to').value = '';
       currentPage = 1;
@@ -524,26 +438,12 @@
       document.getElementById('next-btn').disabled = currentPage >= totalPages;
     }
 
-    async function loadDomains() {
-      // Get all unique domains using count with grouping not available, so fetch all domain values
-      const { data } = await fetchData('incoming_links', { select: 'domain', limit: '100000' });
-      const domains = [...new Set(data.map(d => d.domain).filter(Boolean))].sort();
-      const select = document.getElementById('filter-domain');
-      domains.forEach(d => {
-        const opt = document.createElement('option');
-        opt.value = d;
-        opt.textContent = d;
-        select.appendChild(opt);
-      });
-    }
-
     // Event listeners for filters
-    ['filter-domain', 'filter-relevance', 'filter-status', 'filter-from', 'filter-to'].forEach(id => {
+    ['filter-relevance', 'filter-from', 'filter-to'].forEach(id => {
       document.getElementById(id).addEventListener('change', () => { currentPage = 1; loadData(); });
     });
 
     // Initialize
-    loadDomains();
     loadData();
     setInterval(loadData, 120000);
   </script>
