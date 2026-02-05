@@ -243,8 +243,9 @@
         if (!['select', 'order', 'limit', 'table'].includes(k)) params.append(k, options[k]);
       });
       const response = await fetch(`${API_BASE}/links?${params}`);
-      return response.json();
-    }
+const result = await response.json();
+            return result.data || result;
+          }
 
     const fmt = n => n?.toLocaleString() || '0';
 
