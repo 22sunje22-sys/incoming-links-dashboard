@@ -113,6 +113,30 @@
     .modal-btn.cancel { background: rgba(255,255,255,0.1); color: white; }
     .modal-btn.submit { background: var(--monday); color: var(--storm); }
 
+    /* Description Modal - Large */
+    .desc-modal { background: var(--storm); border: 1px solid rgba(255,255,255,0.15); border-radius: 20px; padding: 0; max-width: 800px; width: 95%; max-height: 85vh; display: flex; flex-direction: column; box-shadow: 0 25px 80px rgba(0,0,0,0.6); }
+    .desc-modal-header { display: flex; justify-content: space-between; align-items: center; padding: 24px 28px; border-bottom: 1px solid rgba(255,255,255,0.1); }
+    .desc-modal-header h2 { color: var(--monday); font-size: 22px; font-weight: 700; display: flex; align-items: center; gap: 12px; }
+    .desc-modal-close { background: rgba(255,255,255,0.1); border: none; color: white; width: 40px; height: 40px; border-radius: 10px; font-size: 20px; cursor: pointer; transition: all 0.2s; display: flex; align-items: center; justify-content: center; }
+    .desc-modal-close:hover { background: rgba(255,107,107,0.3); color: #ff6b6b; }
+    .desc-modal-body { padding: 28px; flex: 1; overflow-y: auto; }
+    .desc-modal-content { background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.1); border-radius: 12px; padding: 24px; font-size: 15px; line-height: 1.7; color: rgba(255,255,255,0.9); white-space: pre-wrap; word-wrap: break-word; max-height: 50vh; overflow-y: auto; }
+    .desc-modal-content::-webkit-scrollbar { width: 8px; }
+    .desc-modal-content::-webkit-scrollbar-track { background: rgba(255,255,255,0.05); border-radius: 4px; }
+    .desc-modal-content::-webkit-scrollbar-thumb { background: var(--suede); border-radius: 4px; }
+    .desc-modal-content::-webkit-scrollbar-thumb:hover { background: var(--monday); }
+    .desc-modal-footer { padding: 20px 28px; border-top: 1px solid rgba(255,255,255,0.1); display: flex; justify-content: flex-end; gap: 12px; }
+    .desc-copy-btn { padding: 12px 28px; background: var(--suede); color: white; border: none; border-radius: 10px; font-size: 14px; font-weight: 600; cursor: pointer; font-family: 'Inter', sans-serif; transition: all 0.2s; display: flex; align-items: center; gap: 8px; }
+    .desc-copy-btn:hover { background: var(--monday); color: var(--storm); transform: translateY(-2px); }
+    .desc-copy-btn.copied { background: var(--day); color: var(--storm); }
+
+    /* Description preview in table */
+    .desc-preview { display: flex; align-items: center; gap: 8px; cursor: pointer; padding: 6px 10px; background: rgba(255,255,255,0.05); border-radius: 8px; transition: all 0.2s; }
+    .desc-preview:hover { background: rgba(121,226,255,0.1); }
+    .desc-preview-text { color: rgba(255,255,255,0.6); font-size: 12px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; flex: 1; }
+    .desc-preview-icon { color: var(--suede); font-size: 16px; flex-shrink: 0; }
+    .no-desc { color: rgba(255,255,255,0.3); font-size: 12px; }
+
     .footer { text-align: center; padding: 24px; font-size: 12px; color: rgba(255,255,255,0.3); }
   </style>
 </head>
@@ -225,6 +249,24 @@
     </div>
   </div>
 
+  <!-- Description Modal - Large with Copy & Scroll -->
+  <div class="modal-overlay" id="desc-modal">
+    <div class="desc-modal">
+      <div class="desc-modal-header">
+        <h2>📄 Description</h2>
+        <button class="desc-modal-close" onclick="closeDescModal()">✕</button>
+      </div>
+      <div class="desc-modal-body">
+        <div class="desc-modal-content" id="desc-modal-content"></div>
+      </div>
+      <div class="desc-modal-footer">
+        <button class="desc-copy-btn" id="desc-copy-btn" onclick="copyDescription()">
+          📋 Copy to Clipboard
+        </button>
+      </div>
+    </div>
+  </div>
+
   <script>
     // NO SUPABASE KEY EXPOSED - All calls go through secure API proxy
     const API_BASE = '/api';
@@ -234,6 +276,7 @@
     let currentTab = 'all';
     let flaggingId = null;
     let flaggedIds = new Set();
+    let currentDescription = '';
     const perPage = 30;
 
     // Fetch count from secure API
@@ -332,6 +375,9 @@
         const isDone = r.done && r.done.trim() !== '';
         const isFlagged = r.flagged === true;
         const date = r.uploaded_at ? new Date(r.uploaded_at).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit' }) : '-';
+        const desc = r.description || '';
+        const descPreview = desc ? (desc.length > 80 ? desc.slice(0, 80) + '...' : desc) : '';
+        const descEscaped = desc.replace(/`/g, '\\`').replace(/\$/g, '\\$');
 
         return `<tr>
           <td><span class="domain">${r.domain || '-'}</span></td>
@@ -340,9 +386,13 @@
             ${r.title ? '<div class="expand-hint">click to expand</div>' : ''}
           </td>
           <td class="desc-cell">
-            <div class="desc-text truncate" onclick="toggleExpand(this)">${r.short_description || r.long_description || '-'}</div>
+            ${desc ? `<div class="desc-preview" onclick="openDescModal(\`${descEscaped}\`)">
+              <span class="desc-preview-text">${descPreview}</span>
+              <span class="desc-preview-icon">👁️</span>
+            </div>` : '<span class="no-desc">—</span>'}
           </td>
-        <td>${r.url ? `<a href="${r.url}" target="_blank" class="source-link" title="${r.url}">🔗</a>` : '-'}</td>          <td>${r.eng_blog_url ? `<a href="${r.eng_blog_url}" target="_blank" class="draft-link">📄 Draft EN</a>` : '<span class="no-draft">—</span>'}</td>
+          <td>${r.url ? `<a href="${r.url}" target="_blank" class="source-link" title="${r.url}">🔗</a>` : '-'}</td>
+          <td>${r.eng_blog_url ? `<a href="${r.eng_blog_url}" target="_blank" class="draft-link">📄 Draft EN</a>` : '<span class="no-draft">—</span>'}</td>
           <td>${r.ar_blog_url ? `<a href="${r.ar_blog_url}" target="_blank" class="draft-link ar">📄 Draft AR</a>` : '<span class="no-draft">—</span>'}</td>
           <td class="region">${r.region || '-'} ${r.region_emoji || ''}</td>
           <td>${relClass ? `<span class="relevance ${relClass}">${relText}</span>` : '-'}</td>
@@ -364,6 +414,49 @@
       el.classList.toggle('truncate');
       el.classList.toggle('expanded');
     }
+
+    // Description Modal Functions
+    function openDescModal(description) {
+      currentDescription = description;
+      document.getElementById('desc-modal-content').textContent = description;
+      document.getElementById('desc-modal').classList.add('show');
+      document.getElementById('desc-copy-btn').classList.remove('copied');
+      document.getElementById('desc-copy-btn').innerHTML = '📋 Copy to Clipboard';
+    }
+
+    function closeDescModal() {
+      document.getElementById('desc-modal').classList.remove('show');
+      currentDescription = '';
+    }
+
+    async function copyDescription() {
+      try {
+        await navigator.clipboard.writeText(currentDescription);
+        const btn = document.getElementById('desc-copy-btn');
+        btn.classList.add('copied');
+        btn.innerHTML = '✓ Copied!';
+        setTimeout(() => {
+          btn.classList.remove('copied');
+          btn.innerHTML = '📋 Copy to Clipboard';
+        }, 2000);
+      } catch (err) {
+        console.error('Failed to copy:', err);
+        alert('Failed to copy. Please select and copy manually.');
+      }
+    }
+
+    // Close modal on overlay click
+    document.getElementById('desc-modal').addEventListener('click', function(e) {
+      if (e.target === this) closeDescModal();
+    });
+
+    // Close modal on Escape key
+    document.addEventListener('keydown', function(e) {
+      if (e.key === 'Escape') {
+        closeDescModal();
+        closeModal();
+      }
+    });
 
     async function toggleDone(id, currentlyDone) {
       if (!currentlyDone) {
