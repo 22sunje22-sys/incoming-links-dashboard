@@ -342,8 +342,7 @@
           <td class="desc-cell">
             <div class="desc-text truncate" onclick="toggleExpand(this)">${r.short_description || r.long_description || '-'}</div>
           </td>
-          <td><a href="${r.source_url || '#'}" target="_blank" class="source-link">${r.source_url ? r.source_url.slice(0,40)+'...' : '-'}</a></td>
-          <td>${r.eng_blog_url ? `<a href="${r.eng_blog_url}" target="_blank" class="draft-link">📄 Draft EN</a>` : '<span class="no-draft">—</span>'}</td>
+        <td>${r.url ? `<a href="${r.url}" target="_blank" class="source-link" title="${r.url}">🔗</a>` : '-'}</td>          <td>${r.eng_blog_url ? `<a href="${r.eng_blog_url}" target="_blank" class="draft-link">📄 Draft EN</a>` : '<span class="no-draft">—</span>'}</td>
           <td>${r.ar_blog_url ? `<a href="${r.ar_blog_url}" target="_blank" class="draft-link ar">📄 Draft AR</a>` : '<span class="no-draft">—</span>'}</td>
           <td class="region">${r.region || '-'} ${r.region_emoji || ''}</td>
           <td>${relClass ? `<span class="relevance ${relClass}">${relText}</span>` : '-'}</td>
