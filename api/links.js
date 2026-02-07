@@ -39,7 +39,9 @@ export default async function handler(req, res) {
     }
 
     if (relevance === 'high') {
-      filters.push('relevance=ilike.*high*');
+      filters.push('relevance=ilike.*high*')
+    } else if (relevance === 'high-medium') {
+            filters.push('or=(relevance.ilike.*high*,relevance.ilike.*medium*)');
     } else if (relevance === 'medium') {
       filters.push('relevance=ilike.*medium*');
     } else if (relevance === 'low') {
