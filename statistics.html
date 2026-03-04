@@ -221,12 +221,13 @@
     }
 
     // Use API proxy for secure stats fetching
-    async function fetchCount(endpoint, filter = '') {
-      const dateFilter = getDateFilter();
+    async function fetchCount(type = '') {
+      const from = document.getElementById('filter-from').value;
+      const to = document.getElementById('filter-to').value;
       const params = new URLSearchParams();
-      params.append('table', endpoint);
-      if (filter) params.append('filter', filter);
-      if (dateFilter) params.append('dateFilter', dateFilter);
+      if (type) params.append('type', type);
+      if (from) params.append('dateFrom', from);
+      if (to) params.append('dateTo', to);
 
       const response = await fetch(`${API_BASE}/stats?${params}`);
       const data = await response.json();
@@ -263,13 +264,13 @@ const result = await response.json();
 
       // Use COUNT queries with Prefer: count=exact and Range: 0-0 header to get accurate totals
       const [total, high, medium, low, done, drafts, flagged] = await Promise.all([
-        fetchCount('incoming_links'),
-        fetchCount('incoming_links', '&relevance=ilike.*high*'),
-        fetchCount('incoming_links', '&relevance=ilike.*medium*'),
-        fetchCount('incoming_links', '&relevance=ilike.*low*'),
-        fetchCount('incoming_links', '&done=not.is.null&done=neq.'),
-        fetchCount('incoming_links', '&eng_blog_url=not.is.null'),
-        fetchCount('relevance_feedback')
+        fetchCount(),
+        fetchCount('high'),
+        fetchCount('medium'),
+        fetchCount('low'),
+        fetchCount('done'),
+        fetchCount('drafts'),
+        fetchCount('flagged')
       ]);
 
       // Get domain counts for selected period
