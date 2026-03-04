@@ -48,6 +48,14 @@
     .stat-value.teal { color: var(--suede); }
     .stat-value.white { color: white; }
     .stat-value.red { color: #ff6b6b; }
+    .stat-growth { font-size: 11px; font-weight: 600; margin-top: 6px; display: block; letter-spacing: 0.3px; }
+    .stat-growth.up { color: #C7F8BA; }
+    .stat-growth.down { color: #ff6b6b; }
+    .stat-growth.flat { color: rgba(255,255,255,0.3); }
+    .article-stat-growth { font-size: 13px; font-weight: 600; margin-top: 4px; }
+    .article-stat-growth.up { color: #C7F8BA; }
+    .article-stat-growth.down { color: #ff6b6b; }
+    .article-stat-growth.flat { color: rgba(255,255,255,0.3); }
 
     .article-stats { background: rgba(121,226,255,0.05); border: 2px solid rgba(121,226,255,0.2); border-radius: 20px; padding: 32px; margin-bottom: 40px; }
     .article-stats-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 24px; }
@@ -111,12 +119,12 @@
 
     <div class="section-title">Links Overview</div>
     <div class="stats-grid">
-      <div class="stat-card"><div class="stat-label">Total Links</div><div class="stat-value cyan" id="stat-total">-</div></div>
-      <div class="stat-card"><div class="stat-label">High Relevance</div><div class="stat-value green" id="stat-high">-</div></div>
-      <div class="stat-card"><div class="stat-label">Medium</div><div class="stat-value teal" id="stat-medium">-</div></div>
-      <div class="stat-card"><div class="stat-label">Low</div><div class="stat-value red" id="stat-low">-</div></div>
-      <div class="stat-card"><div class="stat-label">Unique Domains</div><div class="stat-value white" id="stat-domains">-</div></div>
-      <div class="stat-card"><div class="stat-label">Completed</div><div class="stat-value cyan" id="stat-done">-</div></div>
+      <div class="stat-card"><div class="stat-label">Total Links</div><div class="stat-value cyan" id="stat-total">-</div><span class="stat-growth flat" id="growth-total"></span></div>
+      <div class="stat-card"><div class="stat-label">High Relevance</div><div class="stat-value green" id="stat-high">-</div><span class="stat-growth flat" id="growth-high"></span></div>
+      <div class="stat-card"><div class="stat-label">Medium</div><div class="stat-value teal" id="stat-medium">-</div><span class="stat-growth flat" id="growth-medium"></span></div>
+      <div class="stat-card"><div class="stat-label">Low</div><div class="stat-value red" id="stat-low">-</div><span class="stat-growth flat" id="growth-low"></span></div>
+      <div class="stat-card"><div class="stat-label">Unique Domains</div><div class="stat-value white" id="stat-domains">-</div><span class="stat-growth flat" id="growth-domains"></span></div>
+      <div class="stat-card"><div class="stat-label">Completed</div><div class="stat-value cyan" id="stat-done">-</div><span class="stat-growth flat" id="growth-done"></span></div>
     </div>
 
     <div class="section-title">Article Performance</div>
@@ -125,16 +133,19 @@
         <div class="article-stat">
           <div class="article-stat-value" id="art-total">-</div>
           <div class="article-stat-label">Total Drafts</div>
+          <div class="article-stat-growth flat" id="growth-drafts"></div>
         </div>
         <div class="article-stat">
           <div class="article-stat-value" id="art-published">-</div>
           <div class="article-stat-label">Published</div>
           <div class="article-stat-percent" id="art-published-pct">-</div>
+          <div class="article-stat-growth flat" id="growth-published"></div>
         </div>
         <div class="article-stat">
           <div class="article-stat-value" id="art-flagged">-</div>
           <div class="article-stat-label">Flagged</div>
           <div class="article-stat-percent" id="art-flagged-pct">-</div>
+          <div class="article-stat-growth flat" id="growth-flagged"></div>
         </div>
         <div class="article-stat">
           <div class="article-stat-value" id="art-conversion">-</div>
@@ -221,9 +232,9 @@
     }
 
     // Use API proxy for secure stats fetching
-    async function fetchCount(type = '') {
-      const from = document.getElementById('filter-from').value;
-      const to = document.getElementById('filter-to').value;
+    async function fetchCount(type = '', fromOverride = null, toOverride = null) {
+      const from = fromOverride ?? document.getElementById('filter-from').value;
+      const to = toOverride ?? document.getElementById('filter-to').value;
       const params = new URLSearchParams();
       if (type) params.append('type', type);
       if (from) params.append('dateFrom', from);
@@ -232,6 +243,23 @@
       const response = await fetch(`${API_BASE}/stats?${params}`);
       const data = await response.json();
       return data.count || 0;
+    }
+
+    function growthBadge(curr, prev) {
+      if (!prev) return { cls: 'flat', text: '— no prev data' };
+      const pct = (curr - prev) / prev * 100;
+      const abs = Math.abs(pct).toFixed(1);
+      if (pct > 0.05) return { cls: 'up', text: `▲ ${abs}% vs prev period` };
+      if (pct < -0.05) return { cls: 'down', text: `▼ ${abs}% vs prev period` };
+      return { cls: 'flat', text: `→ 0% vs prev period` };
+    }
+
+    function setGrowth(id, curr, prev) {
+      const el = document.getElementById(id);
+      if (!el) return;
+      const { cls, text } = growthBadge(curr, prev);
+      el.className = el.className.replace(/\b(up|down|flat)\b/, cls);
+      el.textContent = text;
     }
 
     async function fetchData(endpoint, options = {}) {
@@ -262,15 +290,31 @@ const result = await response.json();
         `📅 ${fromDate.toLocaleDateString('en-GB', {day: '2-digit', month: 'short', year: 'numeric'})} → ${toDate.toLocaleDateString('en-GB', {day: '2-digit', month: 'short', year: 'numeric'})} (${daysDiff} days)`;
       document.getElementById('chart-title').textContent = `Links Over Time (${daysDiff} days)`;
 
+      // Compute prev period dates (same duration, shifted back)
+      const prevToDate = new Date(fromDate);
+      prevToDate.setDate(prevToDate.getDate() - 1);
+      const prevFromDate = new Date(prevToDate);
+      prevFromDate.setDate(prevFromDate.getDate() - daysDiff);
+      const prevFrom = prevFromDate.toISOString().slice(0, 10);
+      const prevTo = prevToDate.toISOString().slice(0, 10);
+
       // Use COUNT queries with Prefer: count=exact and Range: 0-0 header to get accurate totals
-      const [total, high, medium, low, done, drafts, flagged] = await Promise.all([
+      const [total, high, medium, low, done, drafts, flagged,
+             pTotal, pHigh, pMedium, pLow, pDone, pDrafts, pFlagged] = await Promise.all([
         fetchCount(),
         fetchCount('high'),
         fetchCount('medium'),
         fetchCount('low'),
         fetchCount('done'),
         fetchCount('drafts'),
-        fetchCount('flagged')
+        fetchCount('flagged'),
+        fetchCount('', prevFrom, prevTo),
+        fetchCount('high', prevFrom, prevTo),
+        fetchCount('medium', prevFrom, prevTo),
+        fetchCount('low', prevFrom, prevTo),
+        fetchCount('done', prevFrom, prevTo),
+        fetchCount('drafts', prevFrom, prevTo),
+        fetchCount('flagged', prevFrom, prevTo)
       ]);
 
       // Get domain counts for selected period
@@ -290,12 +334,32 @@ const result = await response.json();
       document.getElementById('stat-domains').textContent = fmt(Object.keys(domains).length);
       document.getElementById('stat-done').textContent = fmt(done);
 
+      setGrowth('growth-total', total, pTotal);
+      setGrowth('growth-high', high, pHigh);
+      setGrowth('growth-medium', medium, pMedium);
+      setGrowth('growth-low', low, pLow);
+      setGrowth('growth-done', done, pDone);
+
+      // Domains growth: compare unique domain counts
+      const prevDomainData = await fetchData('incoming_links', {
+        select: 'domain',
+        limit: 100000,
+        ...(prevFrom && { 'uploaded_at': `gte.${prevFrom}T00:00:00` })
+      });
+      const prevDomains = {};
+      prevDomainData.forEach(d => { if (d.domain) prevDomains[d.domain] = (prevDomains[d.domain] || 0) + 1; });
+      setGrowth('growth-domains', Object.keys(domains).length, Object.keys(prevDomains).length);
+
       document.getElementById('art-total').textContent = fmt(drafts);
       document.getElementById('art-published').textContent = fmt(done);
       document.getElementById('art-published-pct').textContent = drafts > 0 ? `${((done/drafts)*100).toFixed(1)}%` : '-';
       document.getElementById('art-flagged').textContent = fmt(flagged);
       document.getElementById('art-flagged-pct').textContent = total > 0 ? `${((flagged/total)*100).toFixed(2)}%` : '-';
       document.getElementById('art-conversion').textContent = high > 0 ? `${((drafts/high)*100).toFixed(1)}%` : '0%';
+
+      setGrowth('growth-drafts', drafts, pDrafts);
+      setGrowth('growth-published', done, pDone);
+      setGrowth('growth-flagged', flagged, pFlagged);
 
       // Get data for chart within selected period
       const chartData = await fetchData('incoming_links', {
