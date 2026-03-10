@@ -24,7 +24,7 @@ export default async function handler(req, res) {
   }
 
   const allowedTables = ['incoming_links', 'instagram_reels', 'social_posts', 'memory'];
-  const allowedFields = ['posted_socials', 'posted_blog'];
+  const allowedFields = ['posted_socials', 'posted_blog', 'done'];
 
   if (!allowedTables.includes(table)) {
     return res.status(400).json({ error: 'Invalid table' });

@@ -17,14 +17,15 @@ export default async function handler(req, res) {
   const SUPABASE_URL = process.env.SUPABASE_URL;
   const SUPABASE_KEY = process.env.SUPABASE_KEY;
 
-  const { link_id, feedback_text, feedback_type } = req.body;
+  const { link_id, issue_type, correct_relevance, notes } = req.body;
 
-  if (!link_id || !feedback_text) {
+  if (!link_id) {
     return res.status(400).json({ error: 'Missing required parameters' });
   }
 
   try {
     // Insert feedback into relevance_feedback table
+    const feedbackText = [issue_type, correct_relevance, notes].filter(Boolean).join(' | ');
     const feedbackResponse = await fetch(`${SUPABASE_URL}/rest/v1/relevance_feedback`, {
       method: 'POST',
       headers: {
@@ -35,8 +36,8 @@ export default async function handler(req, res) {
       },
       body: JSON.stringify({
         link_id: link_id,
-        feedback_text: feedback_text,
-        feedback_type: feedback_type || 'issue'
+        feedback_text: feedbackText,
+        feedback_type: issue_type || 'wrong_relevance'
       })
     });
 

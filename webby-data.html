@@ -310,11 +310,11 @@
         return;
       }
 
-      document.getElementById('showing').textContent = `Showing ${(currentPage-1)*perPage + 1}-${Math.min(currentPage*perPage, totalCount)} of ${totalCount.toLocaleString()} mentions`;
+      document.getElementById('showing').textContent = `Showing ${(currentPage-1)*perPage + 1}-${Math.min(currentPage*perPage, totalCount)} of ${totalCount.toLocaleString()} posts`;
 
       rowsData = data;
       tbody.innerHTML = data.map((r, idx) => {
-        const captionPreview = r.row ? (r.row.length > 120 ? r.row.slice(0, 120) + '...' : r.row) : '';
+        const rowPreview = r.row ? (r.row.length > 120 ? r.row.slice(0, 120) + '...' : r.row) : '';
         const isSocial = r.posted_socials && r.posted_socials.trim() !== '';
         const isBlog = r.posted_blog && r.posted_blog.trim() !== '';
         const date = r.created_at ? new Date(r.created_at).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit' }) : '-';
@@ -322,7 +322,7 @@
         const isInstaLink = r.link && r.link.includes('instagram.com');
 
         return `<tr>
-          <td class="caption-cell">${r.row ? `<div class="caption-text truncate" onclick="openRowModal(${idx})">${captionPreview}</div>` : '<span class="no-data">-</span>'}</td>
+          <td class="caption-cell">${r.row ? `<div class="caption-text truncate" onclick="openRowModal(${idx})">${rowPreview}</div>` : '<span class="no-data">-</span>'}</td>
           <td class="link-cell">${r.link ? `<a href="${r.link}" target="_blank">${isInstaLink ? '📸 Open' : '🔗 Open'}</a>` : '-'}</td>
           <td><span class="keyword">${r.keyword || '-'}</span></td>
           <td>${r.topic ? `<span class="topic-tag">${r.topic}</span>` : '<span class="no-data">-</span>'}</td>
@@ -338,7 +338,7 @@
 
     function openRowModal(idx) {
       const text = rowsData[idx]?.row || '';
-      openModal('Caption', text);
+      openModal('Content', text);
     }
 
     function openModal(title, text) {
@@ -420,11 +420,15 @@
 
     // Debounced search
     let searchTimeout;
-    ['filter-search', 'filter-topic'].forEach(id => {
-      document.getElementById(id).addEventListener('input', () => {
-        clearTimeout(searchTimeout);
-        searchTimeout = setTimeout(() => { currentPage = 1; loadData(); }, 500);
-      });
+    document.getElementById('filter-search').addEventListener('input', () => {
+      clearTimeout(searchTimeout);
+      searchTimeout = setTimeout(() => { currentPage = 1; loadData(); }, 500);
+    });
+
+    let topicTimeout;
+    document.getElementById('filter-topic').addEventListener('input', () => {
+      clearTimeout(topicTimeout);
+      topicTimeout = setTimeout(() => { currentPage = 1; loadData(); }, 500);
     });
 
     ['filter-country', 'filter-from', 'filter-to'].forEach(id => {

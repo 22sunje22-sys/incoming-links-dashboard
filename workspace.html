@@ -571,7 +571,14 @@
     }
 
     async function toggleDone(id, currentlyDone) {
-      if (!currentlyDone) {
+      if (currentlyDone) {
+        // Un-done: set done to null via update-status
+        await fetch(`${API_BASE}/update-status`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ id, table: 'incoming_links', field: 'done', value: currentlyDone })
+        });
+      } else {
         await markDone(id);
       }
       loadData();
