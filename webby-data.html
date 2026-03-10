@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Instagram Reels - Incoming Links</title>
+  <title>Webby Data - Incoming Links</title>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <style>
     :root { --storm: #0A181C; --monday: #79E2FF; --day: #C7F8BA; --suede: #00A5D3; --electro: #221327; }
@@ -26,14 +26,6 @@
     .btn { padding: 10px 18px; background: var(--suede); color: white; border: none; border-radius: 8px; font-size: 13px; font-weight: 600; cursor: pointer; font-family: 'Inter', sans-serif; transition: all 0.2s; }
     .btn:hover { background: var(--monday); color: var(--storm); }
 
-    /* Tabs */
-    .tabs { display: flex; gap: 4px; margin-bottom: 20px; background: rgba(255,255,255,0.05); padding: 4px; border-radius: 12px; width: fit-content; }
-    .tab { padding: 12px 24px; background: transparent; border: none; border-radius: 8px; color: rgba(255,255,255,0.6); font-size: 14px; font-weight: 600; cursor: pointer; font-family: 'Inter', sans-serif; transition: all 0.2s; display: flex; align-items: center; gap: 8px; }
-    .tab:hover { color: white; background: rgba(255,255,255,0.1); }
-    .tab.active { background: var(--monday); color: var(--storm); }
-    .tab-count { padding: 2px 8px; background: rgba(0,0,0,0.2); border-radius: 10px; font-size: 12px; }
-    .tab.active .tab-count { background: rgba(0,0,0,0.15); }
-
     .filters { background: rgba(255,255,255,0.03); border-radius: 12px; padding: 16px; margin-bottom: 20px; display: flex; flex-wrap: wrap; gap: 12px; align-items: flex-end; }
     .filter-group { display: flex; flex-direction: column; gap: 4px; }
     .filter-label { font-size: 10px; color: rgba(255,255,255,0.5); text-transform: uppercase; font-weight: 600; }
@@ -50,48 +42,29 @@
     .table-wrapper { overflow-x: auto; background: rgba(255,255,255,0.02); border-radius: 12px; border: 1px solid rgba(255,255,255,0.08); }
     table { width: 100%; border-collapse: collapse; }
     thead { background: rgba(0,0,0,0.4); position: sticky; top: 0; }
-    th { padding: 14px 12px; text-align: left; font-size: 10px; font-weight: 700; color: var(--monday); text-transform: uppercase; letter-spacing: 0.5px; white-space: nowrap; border-bottom: 2px solid var(--monday); cursor: pointer; user-select: none; }
-    th:hover { color: var(--day); }
-    th .sort-icon { font-size: 10px; margin-left: 4px; }
+    th { padding: 14px 12px; text-align: left; font-size: 10px; font-weight: 700; color: var(--monday); text-transform: uppercase; letter-spacing: 0.5px; white-space: nowrap; border-bottom: 2px solid var(--monday); }
     td { padding: 14px 12px; border-bottom: 1px solid rgba(255,255,255,0.05); font-size: 13px; vertical-align: top; }
     tr:hover { background: rgba(121,226,255,0.03); }
 
-    .account { color: var(--monday); font-weight: 600; font-size: 11px; max-width: 140px; word-break: break-all; }
-    .account a { color: var(--monday); text-decoration: none; }
-    .account a:hover { text-decoration: underline; }
-    .reel-link { color: var(--suede); text-decoration: none; font-size: 12px; }
-    .reel-link:hover { color: var(--monday); text-decoration: underline; }
-
-    .metric { font-weight: 700; font-size: 13px; white-space: nowrap; }
-    .metric.views { color: var(--monday); }
-    .metric.likes { color: #ff6b9d; }
-    .metric.comments { color: var(--day); }
-    .metric.er { color: #ffd700; }
-
-    .virus-score { padding: 4px 10px; border-radius: 12px; font-size: 11px; font-weight: 700; display: inline-block; }
-    .virus-score.hot { background: rgba(255,107,107,0.2); color: #ff6b6b; }
-    .virus-score.warm { background: rgba(255,215,0,0.2); color: #ffd700; }
-    .virus-score.cold { background: rgba(255,255,255,0.1); color: rgba(255,255,255,0.5); }
-
-    .theme-cell { max-width: 200px; font-size: 12px; color: rgba(255,255,255,0.7); }
-    .category-cell { max-width: 180px; font-size: 11px; color: rgba(255,255,255,0.6); }
+    .caption-cell { max-width: 350px; }
+    .caption-text { color: rgba(255,255,255,0.8); font-size: 12px; cursor: pointer; padding: 6px 10px; background: rgba(255,255,255,0.05); border-radius: 8px; transition: all 0.2s; }
+    .caption-text:hover { background: rgba(121,226,255,0.1); }
     .truncate { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
-
-    .hook-cell { max-width: 200px; }
-    .hook-text { font-size: 12px; color: rgba(255,255,255,0.8); cursor: pointer; padding: 6px 10px; background: rgba(255,255,255,0.05); border-radius: 8px; transition: all 0.2s; }
-    .hook-text:hover { background: rgba(121,226,255,0.1); }
-    .theme-text { font-size: 12px; color: rgba(255,255,255,0.7); cursor: pointer; }
-    .theme-text:hover { color: var(--monday); }
+    .keyword { color: var(--day); font-weight: 600; font-size: 12px; }
+    .topic-tag { color: var(--suede); font-size: 11px; padding: 3px 8px; background: rgba(0,165,211,0.15); border-radius: 12px; display: inline-block; }
+    .country-tag { font-size: 11px; padding: 3px 8px; border-radius: 12px; display: inline-block; font-weight: 600; }
+    .country-tag.uae { background: rgba(199,248,186,0.2); color: var(--day); }
+    .country-tag.ksa { background: rgba(0,165,211,0.2); color: var(--suede); }
+    .country-tag.bahrain { background: rgba(138,43,226,0.2); color: #b388ff; }
+    .country-tag.oman { background: rgba(255,107,107,0.2); color: #ff6b6b; }
+    .country-tag.qatar { background: rgba(255,215,0,0.2); color: #ffd700; }
+    .country-tag.kuwait { background: rgba(121,226,255,0.2); color: var(--monday); }
+    .country-tag.unknown { background: rgba(255,255,255,0.1); color: rgba(255,255,255,0.5); }
+    .link-cell a { color: var(--suede); text-decoration: none; font-size: 12px; }
+    .link-cell a:hover { color: var(--monday); text-decoration: underline; }
+    .date { font-size: 12px; color: rgba(255,255,255,0.5); white-space: nowrap; }
     .no-data { color: rgba(255,255,255,0.2); font-size: 12px; }
 
-    .status { font-size: 12px; padding: 4px 10px; border-radius: 12px; white-space: nowrap; }
-    .status.sent { background: rgba(199,248,186,0.2); color: var(--day); }
-    .status.pending { background: rgba(255,255,255,0.1); color: rgba(255,255,255,0.5); }
-
-    .date { font-size: 12px; color: rgba(255,255,255,0.5); white-space: nowrap; }
-    .duration { font-size: 12px; color: rgba(255,255,255,0.6); white-space: nowrap; }
-
-    /* Action buttons */
     .actions { display: flex; gap: 6px; flex-wrap: wrap; }
     .action-btn { padding: 5px 10px; border: none; border-radius: 6px; font-size: 11px; font-weight: 600; cursor: pointer; font-family: 'Inter', sans-serif; transition: all 0.2s; white-space: nowrap; }
     .action-btn.social-btn { background: rgba(138,43,226,0.15); color: #b388ff; border: 1px solid rgba(138,43,226,0.3); }
@@ -130,39 +103,26 @@
     <nav class="nav">
       <a href="statistics.html">📊 Statistics</a>
       <a href="workspace.html">📝 Workspace</a>
-      <a href="instagram-reels.html" class="active">🎬 Instagram Reels</a>
-      <a href="webby-data.html">🌐 Webby Data</a>
+      <a href="instagram-reels.html">🎬 Instagram Reels</a>
+      <a href="webby-data.html" class="active">🌐 Webby Data</a>
     </nav>
 
     <div class="header">
-      <h1>🎬 Instagram Reels</h1>
+      <h1>🌐 Webby Data</h1>
       <div class="header-right">
         <div class="live"><div class="live-dot"></div> Live</div>
         <button class="btn" onclick="loadData()">↻ Refresh</button>
       </div>
     </div>
 
-    <!-- Tabs -->
-    <div class="tabs">
-      <button class="tab active" data-tab="all" onclick="switchTab('all')">
-        📋 All <span class="tab-count" id="count-all">-</span>
-      </button>
-      <button class="tab" data-tab="sent" onclick="switchTab('sent')">
-        ✅ Sent <span class="tab-count" id="count-sent">-</span>
-      </button>
-      <button class="tab" data-tab="pending" onclick="switchTab('pending')">
-        ○ Pending <span class="tab-count" id="count-pending">-</span>
-      </button>
-    </div>
-
     <div class="filters">
       <div class="filter-group">
         <span class="filter-label">Search</span>
-        <input type="text" id="filter-search" placeholder="Account, hook, content..." style="min-width: 180px;">
+        <input type="text" id="filter-search" placeholder="Caption, keyword, topic..." style="min-width: 200px;">
       </div>
       <div class="filter-group">
-        <span class="filter-label">Category</span>
-        <input type="text" id="filter-category" placeholder="e.g. Travel, Food..." style="min-width: 140px;">
+        <span class="filter-label">Topic</span>
+        <input type="text" id="filter-topic" placeholder="e.g. concert, festival..." style="min-width: 150px;">
       </div>
       <div class="filter-group">
         <span class="filter-label">Country</span>
@@ -203,21 +163,13 @@
       <table>
         <thead>
           <tr>
-            <th onclick="toggleSort('account_url')">Account</th>
-            <th>Reel</th>
-            <th onclick="toggleSort('posted_date')">Posted <span class="sort-icon"></span></th>
-            <th onclick="toggleSort('views')">Views <span class="sort-icon"></span></th>
-            <th onclick="toggleSort('likes')">Likes <span class="sort-icon"></span></th>
-            <th onclick="toggleSort('comments')">Comments <span class="sort-icon"></span></th>
-            <th onclick="toggleSort('er_likes_cooments_views')">ER % <span class="sort-icon"></span></th>
-            <th onclick="toggleSort('virus_detector')">Viral <span class="sort-icon"></span></th>
-            <th>Duration</th>
-            <th>Theme</th>
-            <th>Category</th>
-            <th>Hook</th>
-            <th>Status</th>
+            <th>Caption</th>
+            <th>Link</th>
+            <th>Keyword</th>
+            <th>Topic</th>
+            <th>Country</th>
+            <th>Date</th>
             <th>Actions</th>
-            <th onclick="toggleSort('added_date')">Added <span class="sort-icon"></span></th>
           </tr>
         </thead>
         <tbody id="table-body"></tbody>
@@ -230,14 +182,14 @@
       <button class="page-btn" id="next-btn" onclick="changePage(1)">Next →</button>
     </div>
 
-    <div class="footer">Incoming Links Dashboard — Instagram Reels • Auto-refresh every 2 min</div>
+    <div class="footer">Incoming Links Dashboard — Webby Data • Auto-refresh every 2 min</div>
   </div>
 
   <!-- Content Modal -->
   <div class="modal-overlay" id="content-modal">
     <div class="content-modal">
       <div class="content-modal-header">
-        <h2 id="modal-title">📄 Content</h2>
+        <h2 id="modal-title">📄 Caption</h2>
         <button class="content-modal-close" onclick="closeModal()">✕</button>
       </div>
       <div class="content-modal-body">
@@ -254,92 +206,34 @@
 
     let currentPage = 1;
     let totalCount = 0;
-    let currentSort = 'added_date';
-    let currentDir = 'desc';
-    let currentTab = 'all';
     let modalText = '';
     const perPage = 30;
 
-    const fmt = n => n != null ? Number(n).toLocaleString() : '-';
-    const fmtPct = n => n != null ? Number(n).toFixed(2) + '%' : '-';
-
-    function extractHandle(url) {
-      if (!url) return '-';
-      const match = url.match(/instagram\.com\/([^/?]+)/);
-      return match ? '@' + match[1] : url;
-    }
-
-    function formatDuration(sec) {
-      if (!sec) return '-';
-      const s = Math.round(Number(sec));
-      if (s < 60) return s + 's';
-      return Math.floor(s / 60) + 'm ' + (s % 60) + 's';
-    }
-
-    function virusClass(score) {
-      if (!score) return 'cold';
-      const s = Number(score);
-      if (s >= 7) return 'hot';
-      if (s >= 4) return 'warm';
-      return 'cold';
-    }
-
-    function toggleSort(col) {
-      if (currentSort === col) {
-        currentDir = currentDir === 'desc' ? 'asc' : 'desc';
-      } else {
-        currentSort = col;
-        currentDir = 'desc';
-      }
-      currentPage = 1;
-      loadData();
-    }
-
-    function switchTab(tab) {
-      currentTab = tab;
-      currentPage = 1;
-      document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-      document.querySelector(`[data-tab="${tab}"]`).classList.add('active');
-      loadData();
-    }
-
-    async function loadCounts() {
-      const tabs = ['all', 'sent', 'pending'];
-      const counts = await Promise.all(tabs.map(async t => {
-        const response = await fetch(`${API_BASE}/reels?tab=${t}&page=0&limit=1`);
-        const result = await response.json();
-        return result.total || 0;
-      }));
-      document.getElementById('count-all').textContent = counts[0].toLocaleString();
-      document.getElementById('count-sent').textContent = counts[1].toLocaleString();
-      document.getElementById('count-pending').textContent = counts[2].toLocaleString();
+    function countryClass(c) {
+      if (!c) return 'unknown';
+      return c.toLowerCase().replace(/\s+/g, '');
     }
 
     async function loadData() {
-      loadCounts();
-
       const search = document.getElementById('filter-search').value.trim();
-      const category = document.getElementById('filter-category').value.trim();
+      const topic = document.getElementById('filter-topic').value.trim();
       const country = document.getElementById('filter-country').value;
       const from = document.getElementById('filter-from').value;
       const to = document.getElementById('filter-to').value;
 
       const params = {
-        tab: currentTab,
         page: currentPage - 1,
-        limit: perPage,
-        sort: currentSort,
-        dir: currentDir
+        limit: perPage
       };
 
       if (search) params.search = search;
-      if (category) params.category = category;
+      if (topic) params.topic = topic;
       if (country) params.country = country;
       if (from) params.dateFrom = from;
       if (to) params.dateTo = to;
 
       const qs = new URLSearchParams(params);
-      const response = await fetch(`${API_BASE}/reels?${qs}`);
+      const response = await fetch(`${API_BASE}/webby?${qs}`);
       const result = await response.json();
       const data = result.data || [];
       totalCount = result.total || 0;
@@ -353,51 +247,33 @@
       const tbody = document.getElementById('table-body');
 
       if (!data || data.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="15" style="text-align:center;padding:40px;color:rgba(255,255,255,0.5);">No reels found</td></tr>';
+        tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;padding:40px;color:rgba(255,255,255,0.5);">No data found</td></tr>';
         document.getElementById('showing').textContent = 'No items';
         return;
       }
 
-      document.getElementById('showing').textContent = `Showing ${(currentPage-1)*perPage + 1}-${Math.min(currentPage*perPage, totalCount)} of ${totalCount.toLocaleString()} reels`;
+      document.getElementById('showing').textContent = `Showing ${(currentPage-1)*perPage + 1}-${Math.min(currentPage*perPage, totalCount)} of ${totalCount.toLocaleString()} mentions`;
 
       tbody.innerHTML = data.map(r => {
-        const handle = extractHandle(r.account_url);
-        const postedDate = r.posted_date ? new Date(r.posted_date).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit' }) : '-';
-        const addedDate = r.added_date ? new Date(r.added_date).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit' }) : '-';
-        const isSent = r.sending_done && r.sending_done.trim() !== '';
+        const captionPreview = r.row ? (r.row.length > 120 ? r.row.slice(0, 120) + '...' : r.row) : '';
+        const captionEscaped = (r.row || '').replace(/`/g, '\\`').replace(/\$/g, '\\$');
         const isSocial = r.posted_socials && r.posted_socials.trim() !== '';
         const isBlog = r.posted_blog && r.posted_blog.trim() !== '';
-        const themePreview = r.theme ? (r.theme.length > 60 ? r.theme.slice(0, 60) + '...' : r.theme) : '';
-        const catPreview = r.category ? (r.category.length > 50 ? r.category.slice(0, 50) + '...' : r.category) : '';
-        const hookPreview = r.hook ? (r.hook.length > 80 ? r.hook.slice(0, 80) + '...' : r.hook) : '';
-        const vc = virusClass(r.virus_detector);
-        // Calculate ER on frontend: (likes + comments) / views * 100
-        const v = Number(r.views) || 0;
-        const l = Number(r.likes) || 0;
-        const c = Number(r.comments) || 0;
-        const er = v > 0 ? ((l + c) / v * 100) : 0;
-        const themeEscaped = (r.theme || '').replace(/`/g, '\\`').replace(/\$/g, '\\$');
-        const hookEscaped = (r.hook || '').replace(/`/g, '\\`').replace(/\$/g, '\\$');
+        const date = r.created_at ? new Date(r.created_at).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit' }) : '-';
+        const cc = countryClass(r.country);
+        const isInstaLink = r.link && r.link.includes('instagram.com');
 
         return `<tr>
-          <td class="account">${r.account_url ? `<a href="${r.account_url}" target="_blank">${handle}</a>` : '-'}</td>
-          <td>${r.url ? `<a href="${r.url}" target="_blank" class="reel-link">🔗 Open</a>` : '-'}</td>
-          <td class="date">${postedDate}</td>
-          <td><span class="metric views">${fmt(r.views)}</span></td>
-          <td><span class="metric likes">${fmt(r.likes)}</span></td>
-          <td><span class="metric comments">${fmt(r.comments)}</span></td>
-          <td><span class="metric er">${er.toFixed(2)}%</span></td>
-          <td>${r.virus_detector != null ? `<span class="virus-score ${vc}">${Number(r.virus_detector).toFixed(0)}</span>` : '<span class="no-data">-</span>'}</td>
-          <td class="duration">${formatDuration(r.duration_sec)}</td>
-          <td class="theme-cell">${r.theme ? `<div class="theme-text truncate" onclick="openModal('Theme', \`${themeEscaped}\`)">${themePreview}</div>` : '<span class="no-data">—</span>'}</td>
-          <td class="category-cell"><div class="truncate">${catPreview || '<span class="no-data">—</span>'}</div></td>
-          <td class="hook-cell">${r.hook ? `<div class="hook-text truncate" onclick="openModal('Hook', \`${hookEscaped}\`)">${hookPreview}</div>` : '<span class="no-data">—</span>'}</td>
-          <td><span class="status ${isSent ? 'sent' : 'pending'}">${isSent ? '✓ Sent' : '○ Pending'}</span></td>
+          <td class="caption-cell">${r.row ? `<div class="caption-text truncate" onclick="openModal('Caption', \`${captionEscaped}\`)">${captionPreview}</div>` : '<span class="no-data">-</span>'}</td>
+          <td class="link-cell">${r.link ? `<a href="${r.link}" target="_blank">${isInstaLink ? '📸 Open' : '🔗 Open'}</a>` : '-'}</td>
+          <td><span class="keyword">${r.keyword || '-'}</span></td>
+          <td>${r.topic ? `<span class="topic-tag">${r.topic}</span>` : '<span class="no-data">-</span>'}</td>
+          <td>${r.country ? `<span class="country-tag ${cc}">${r.country}</span>` : '<span class="no-data">—</span>'}</td>
+          <td class="date">${date}</td>
           <td class="actions">
             <button class="action-btn social-btn ${isSocial ? 'active' : ''}" onclick="toggleStatus('${r.id}', 'posted_socials', ${isSocial})">${isSocial ? '✓ Social' : '○ Social'}</button>
             <button class="action-btn blog-btn ${isBlog ? 'active' : ''}" onclick="toggleStatus('${r.id}', 'posted_blog', ${isBlog})">${isBlog ? '✓ Blog' : '○ Blog'}</button>
           </td>
-          <td class="date">${addedDate}</td>
         </tr>`;
       }).join('');
     }
@@ -439,7 +315,7 @@
       await fetch(`${API_BASE}/update-status`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ id, table: 'instagram_reels', field, value: currentValue })
+        body: JSON.stringify({ id, table: 'memory', field, value: currentValue })
       });
       loadData();
     }
@@ -460,7 +336,7 @@
 
     function clearFilters() {
       document.getElementById('filter-search').value = '';
-      document.getElementById('filter-category').value = '';
+      document.getElementById('filter-topic').value = '';
       document.getElementById('filter-country').value = '';
       document.getElementById('filter-from').value = '';
       document.getElementById('filter-to').value = '';
@@ -481,7 +357,7 @@
 
     // Debounced search
     let searchTimeout;
-    ['filter-search', 'filter-category'].forEach(id => {
+    ['filter-search', 'filter-topic'].forEach(id => {
       document.getElementById(id).addEventListener('input', () => {
         clearTimeout(searchTimeout);
         searchTimeout = setTimeout(() => { currentPage = 1; loadData(); }, 500);

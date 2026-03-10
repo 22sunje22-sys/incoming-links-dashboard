@@ -93,6 +93,12 @@
     .action-btn.flag-btn { background: rgba(255,107,107,0.15); color: #ff6b6b; border: 1px solid rgba(255,107,107,0.3); }
     .action-btn.flag-btn:hover { background: #ff6b6b; color: white; }
     .action-btn.flag-btn.active { background: #ff6b6b; color: white; }
+    .action-btn.social-btn { background: rgba(138,43,226,0.15); color: #b388ff; border: 1px solid rgba(138,43,226,0.3); }
+    .action-btn.social-btn:hover { background: #b388ff; color: var(--storm); }
+    .action-btn.social-btn.active { background: #b388ff; color: var(--storm); }
+    .action-btn.blog-btn { background: rgba(0,165,211,0.15); color: var(--suede); border: 1px solid rgba(0,165,211,0.3); }
+    .action-btn.blog-btn:hover { background: var(--suede); color: white; }
+    .action-btn.blog-btn.active { background: var(--suede); color: white; }
 
     .pagination { display: flex; justify-content: center; align-items: center; gap: 12px; margin-top: 24px; padding: 20px; }
     .page-btn { padding: 10px 18px; background: rgba(255,255,255,0.1); border: none; border-radius: 8px; color: white; font-size: 13px; cursor: pointer; font-family: 'Inter', sans-serif; transition: all 0.2s; }
@@ -146,6 +152,7 @@
       <a href="statistics.html">📊 Statistics</a>
       <a href="workspace.html" class="active">📝 Workspace</a>
       <a href="instagram-reels.html">🎬 Instagram Reels</a>
+      <a href="webby-data.html">🌐 Webby Data</a>
     </nav>
 
     <div class="header">
@@ -184,6 +191,15 @@
         <span class="filter-label">Country</span>
         <select id="filter-country">
           <option value="">All</option>
+          <option value="UAE">🇦🇪 UAE</option>
+          <option value="gcc_excl_uae">🌍 GCC excl UAE</option>
+          <option value="Bahrain">🇧🇭 Bahrain</option>
+          <option value="KSA">🇸🇦 KSA</option>
+          <option value="Kuwait">🇰🇼 Kuwait</option>
+          <option value="Qatar">🇶🇦 Qatar</option>
+          <option value="Oman">🇴🇲 Oman</option>
+          <option value="India">🇮🇳 India</option>
+          <option value="other">🌐 Other</option>
         </select>
       </div>
       <div class="filter-group">
@@ -342,22 +358,6 @@
       loadData();
     }
 
-    async function loadRegions() {
-      try {
-        const response = await fetch(`${API_BASE}/regions`);
-        const result = await response.json();
-        const select = document.getElementById('filter-country');
-        (result.regions || []).forEach(r => {
-          const opt = document.createElement('option');
-          opt.value = r.name;
-          opt.textContent = `${r.emoji} ${r.name}`.trim();
-          select.appendChild(opt);
-        });
-      } catch (e) {
-        console.error('Failed to load regions:', e);
-      }
-    }
-
     async function loadData() {
       await loadCounts();
 
@@ -402,6 +402,8 @@
         const relText = r.relevance?.includes('high') ? 'High' : r.relevance?.includes('medium') ? 'Medium' : r.relevance?.includes('low') ? 'Low' : '-';
         const isDone = r.done && r.done.trim() !== '';
         const isFlagged = r.flagged === true;
+        const isSocial = r.posted_socials && r.posted_socials.trim() !== '';
+        const isBlog = r.posted_blog && r.posted_blog.trim() !== '';
         const date = r.uploaded_at ? new Date(r.uploaded_at).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit' }) : '-';
         const desc = r.description || '';
         const descPreview = desc ? (desc.length > 80 ? desc.slice(0, 80) + '...' : desc) : '';
@@ -432,6 +434,12 @@
             </button>
             <button class="action-btn flag-btn ${isFlagged ? 'active' : ''}" onclick="openFlagModal('${r.id}', '${r.relevance || ''}')" title="Report issue">
               ${isFlagged ? '🚩 Flagged' : '⚑ Flag Issue'}
+            </button>
+            <button class="action-btn social-btn ${isSocial ? 'active' : ''}" onclick="togglePostStatus('${r.id}', 'posted_socials', ${isSocial})" title="Posted on socials">
+              ${isSocial ? '✓ Social' : '○ Social'}
+            </button>
+            <button class="action-btn blog-btn ${isBlog ? 'active' : ''}" onclick="togglePostStatus('${r.id}', 'posted_blog', ${isBlog})" title="Posted on blog">
+              ${isBlog ? '✓ Blog' : '○ Blog'}
             </button>
           </td>
         </tr>`;
@@ -485,6 +493,15 @@
         closeModal();
       }
     });
+
+    async function togglePostStatus(id, field, currentValue) {
+      await fetch(`${API_BASE}/update-status`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id, table: 'incoming_links', field, value: currentValue })
+      });
+      loadData();
+    }
 
     async function toggleDone(id, currentlyDone) {
       if (!currentlyDone) {
@@ -569,7 +586,6 @@
     });
 
     // Initialize
-    loadRegions();
     loadData();
     setInterval(loadData, 120000);
   </script>

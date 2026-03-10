@@ -53,7 +53,13 @@ export default async function handler(req, res) {
     }
 
     if (country) {
-      filters.push(`country=eq.${country}`);
+      if (country === 'gcc_excl_uae') {
+        filters.push('country=in.(Bahrain,KSA,Kuwait,Qatar,Oman)');
+      } else if (country === 'other') {
+        filters.push('or=(country.is.null,country.not.in.(UAE,Bahrain,KSA,Kuwait,Qatar,Oman))');
+      } else {
+        filters.push(`country=eq.${country}`);
+      }
     }
 
     if (filters.length > 0) {

@@ -14,7 +14,7 @@ export default async function handler(req, res) {
   const SUPABASE_KEY = process.env.SUPABASE_KEY;
 
   try {
-    const url = `${SUPABASE_URL}/rest/v1/incoming_links?select=region,region_emoji&order=region.asc`;
+    const url = `${SUPABASE_URL}/rest/v1/incoming_links?select=country&order=country.asc`;
 
     const response = await fetch(url, {
       headers: {
@@ -26,19 +26,16 @@ export default async function handler(req, res) {
 
     const data = await response.json();
 
-    // Extract unique regions
-    const regionMap = new Map();
+    const countrySet = new Set();
     for (const row of data) {
-      if (row.region && row.region.trim()) {
-        const key = row.region.trim();
-        if (!regionMap.has(key)) {
-          regionMap.set(key, row.region_emoji || '');
-        }
+      if (row.country && row.country.trim()) {
+        countrySet.add(row.country.trim());
       }
     }
 
-    const regions = Array.from(regionMap.entries())
-      .map(([name, emoji]) => ({ name, emoji }))
+    const emojiMap = { UAE: '🇦🇪', Bahrain: '🇧🇭', KSA: '🇸🇦', Kuwait: '🇰🇼', Qatar: '🇶🇦', Oman: '🇴🇲', India: '🇮🇳' };
+    const regions = Array.from(countrySet)
+      .map(name => ({ name, emoji: emojiMap[name] || '' }))
       .sort((a, b) => a.name.localeCompare(b.name));
 
     res.status(200).json({ regions });

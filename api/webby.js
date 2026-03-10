@@ -1,5 +1,5 @@
-// Vercel Serverless Function - Links API
-// Fetches links with filters and pagination
+// Vercel Serverless Function - Webby Data API
+// Fetches memory table with filters and pagination
 
 export default async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Origin', '*');
@@ -14,46 +14,32 @@ export default async function handler(req, res) {
   const SUPABASE_KEY = process.env.SUPABASE_KEY;
 
   const {
-    tab = 'all',
     page = 0,
-    limit = 20,
-    relevance,
+    limit = 30,
     dateFrom,
     dateTo,
+    search,
     country,
-    mode = 'workspace'
+    topic
   } = req.query;
 
   try {
-    let url = `${SUPABASE_URL}/rest/v1/incoming_links?select=*`;
+    let url = `${SUPABASE_URL}/rest/v1/memory?select=*`;
     let filters = [];
 
-    if (mode === 'workspace') {
-      if (tab === 'done') {
-        filters.push('done=not.is.null');
-        filters.push('done=neq.');
-      } else if (tab === 'flagged') {
-        filters.push('flagged=eq.true');
-      } else {
-        filters.push('or=(done.is.null,done.eq.)');
-      }
-    }
-
-    if (relevance === 'high') {
-      filters.push('relevance=ilike.*high*')
-    } else if (relevance === 'high-medium') {
-            filters.push('or=(relevance.ilike.*high*,relevance.ilike.*medium*)');
-    } else if (relevance === 'medium') {
-      filters.push('relevance=ilike.*medium*');
-    } else if (relevance === 'low') {
-      filters.push('relevance=ilike.*low*');
-    }
-
     if (dateFrom) {
-      filters.push(`uploaded_at=gte.${dateFrom}T00:00:00`);
+      filters.push(`created_at=gte.${dateFrom}T00:00:00`);
     }
     if (dateTo) {
-      filters.push(`uploaded_at=lte.${dateTo}T23:59:59`);
+      filters.push(`created_at=lte.${dateTo}T23:59:59`);
+    }
+
+    if (search) {
+      filters.push(`or=(row.ilike.*${search}*,keyword.ilike.*${search}*,topic.ilike.*${search}*,link.ilike.*${search}*)`);
+    }
+
+    if (topic) {
+      filters.push(`topic=ilike.*${topic}*`);
     }
 
     if (country) {
@@ -70,7 +56,7 @@ export default async function handler(req, res) {
       url += '&' + filters.join('&');
     }
 
-    url += '&order=uploaded_at.desc';
+    url += '&order=created_at.desc';
 
     const offset = parseInt(page) * parseInt(limit);
     const rangeEnd = offset + parseInt(limit) - 1;
