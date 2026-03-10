@@ -1,5 +1,5 @@
-// Vercel Serverless Function - Links API
-// Fetches links with filters and pagination
+// Vercel Serverless Function - Instagram Reels API
+// Fetches reels with filters and pagination
 
 export default async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Origin', '*');
@@ -16,55 +16,55 @@ export default async function handler(req, res) {
   const {
     tab = 'all',
     page = 0,
-    limit = 20,
-    relevance,
+    limit = 30,
     dateFrom,
     dateTo,
-    country,
-    mode = 'workspace'
+    category,
+    search,
+    sort = 'added_date',
+    dir = 'desc',
+    country
   } = req.query;
 
   try {
-    let url = `${SUPABASE_URL}/rest/v1/incoming_links?select=*`;
+    let url = `${SUPABASE_URL}/rest/v1/instagram_reels?select=*`;
     let filters = [];
 
-    if (mode === 'workspace') {
-      if (tab === 'done') {
-        filters.push('done=not.is.null');
-        filters.push('done=neq.');
-      } else if (tab === 'flagged') {
-        filters.push('flagged=eq.true');
-      } else {
-        filters.push('or=(done.is.null,done.eq.)');
-      }
-    }
-
-    if (relevance === 'high') {
-      filters.push('relevance=ilike.*high*')
-    } else if (relevance === 'high-medium') {
-            filters.push('or=(relevance.ilike.*high*,relevance.ilike.*medium*)');
-    } else if (relevance === 'medium') {
-      filters.push('relevance=ilike.*medium*');
-    } else if (relevance === 'low') {
-      filters.push('relevance=ilike.*low*');
-    }
-
     if (dateFrom) {
-      filters.push(`uploaded_at=gte.${dateFrom}T00:00:00`);
+      filters.push(`added_date=gte.${dateFrom}T00:00:00`);
     }
     if (dateTo) {
-      filters.push(`uploaded_at=lte.${dateTo}T23:59:59`);
+      filters.push(`added_date=lte.${dateTo}T23:59:59`);
+    }
+
+    if (category) {
+      filters.push(`category=ilike.*${category}*`);
+    }
+
+    if (search) {
+      filters.push(`or=(theme.ilike.*${search}*,hook.ilike.*${search}*,content.ilike.*${search}*,account_url.ilike.*${search}*)`);
+    }
+
+    if (tab === 'sent') {
+      filters.push('sending_done=not.is.null');
+      filters.push('sending_done=neq.');
+    } else if (tab === 'pending') {
+      filters.push('or=(sending_done.is.null,sending_done.eq.)');
     }
 
     if (country) {
-      filters.push(`region=eq.${country}`);
+      filters.push(`country=eq.${country}`);
     }
 
     if (filters.length > 0) {
       url += '&' + filters.join('&');
     }
 
-    url += '&order=uploaded_at.desc';
+    // Sorting
+    const allowedSorts = ['added_date', 'posted_date', 'views', 'likes', 'comments', 'er_likes_cooments_views', 'virus_detector', 'followers'];
+    const sortCol = allowedSorts.includes(sort) ? sort : 'added_date';
+    const sortDir = dir === 'asc' ? 'asc' : 'desc';
+    url += `&order=${sortCol}.${sortDir}.nullslast`;
 
     const offset = parseInt(page) * parseInt(limit);
     const rangeEnd = offset + parseInt(limit) - 1;

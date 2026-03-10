@@ -145,6 +145,7 @@
     <nav class="nav">
       <a href="statistics.html">📊 Statistics</a>
       <a href="workspace.html" class="active">📝 Workspace</a>
+      <a href="instagram-reels.html">🎬 Instagram Reels</a>
     </nav>
 
     <div class="header">
@@ -177,6 +178,12 @@
           <option value="high-medium">✅☑️ High & Medium</option>
           <option value="medium">☑️ Medium</option>
           <option value="low">❌ Low</option>
+        </select>
+      </div>
+      <div class="filter-group">
+        <span class="filter-label">Country</span>
+        <select id="filter-country">
+          <option value="">All</option>
         </select>
       </div>
       <div class="filter-group">
@@ -335,10 +342,27 @@
       loadData();
     }
 
+    async function loadRegions() {
+      try {
+        const response = await fetch(`${API_BASE}/regions`);
+        const result = await response.json();
+        const select = document.getElementById('filter-country');
+        (result.regions || []).forEach(r => {
+          const opt = document.createElement('option');
+          opt.value = r.name;
+          opt.textContent = `${r.emoji} ${r.name}`.trim();
+          select.appendChild(opt);
+        });
+      } catch (e) {
+        console.error('Failed to load regions:', e);
+      }
+    }
+
     async function loadData() {
       await loadCounts();
 
       const relevance = document.getElementById('filter-relevance').value;
+      const country = document.getElementById('filter-country').value;
       const from = document.getElementById('filter-from').value;
       const to = document.getElementById('filter-to').value;
 
@@ -349,6 +373,7 @@
       };
 
       if (relevance) params.relevance = relevance;
+      if (country) params.country = country;
       if (from) params.dateFrom = from;
       if (to) params.dateTo = to;
 
@@ -385,8 +410,8 @@
         return `<tr>
           <td><span class="domain">${r.domain || '-'}</span></td>
           <td class="title-cell">
-            <div class="title-text truncate" onclick="toggleExpand(this)">${r.title || '-'}</div>
-            ${r.title ? '<div class="expand-hint">click to expand</div>' : ''}
+            <div class="title-text truncate" onclick="toggleExpand(this)">${r.title || r.url || '-'}</div>
+            ${(r.title || r.url) ? '<div class="expand-hint">click to expand</div>' : ''}
           </td>
           <td class="desc-cell">
             ${desc ? `<div class="desc-preview" onclick="openDescModal(\`${descEscaped}\`)">
@@ -520,6 +545,7 @@
 
     function clearFilters() {
       document.getElementById('filter-relevance').value = '';
+      document.getElementById('filter-country').value = '';
       document.getElementById('filter-from').value = '';
       document.getElementById('filter-to').value = '';
       currentPage = 1;
@@ -538,11 +564,12 @@
     }
 
     // Event listeners for filters
-    ['filter-relevance', 'filter-from', 'filter-to'].forEach(id => {
+    ['filter-relevance', 'filter-country', 'filter-from', 'filter-to'].forEach(id => {
       document.getElementById(id).addEventListener('change', () => { currentPage = 1; loadData(); });
     });
 
     // Initialize
+    loadRegions();
     loadData();
     setInterval(loadData, 120000);
   </script>
