@@ -60,6 +60,10 @@
     .country-tag.qatar { background: rgba(255,215,0,0.2); color: #ffd700; }
     .country-tag.kuwait { background: rgba(121,226,255,0.2); color: var(--monday); }
     .country-tag.unknown { background: rgba(255,255,255,0.1); color: rgba(255,255,255,0.5); }
+    .relevance-tag { font-size: 11px; padding: 3px 8px; border-radius: 12px; display: inline-block; font-weight: 600; background: rgba(199,248,186,0.15); color: var(--day); }
+    .relevance-tag.rel-high { background: rgba(199,248,186,0.25); color: var(--day); }
+    .relevance-tag.rel-medium { background: rgba(255,215,0,0.2); color: #ffd700; }
+    .relevance-tag.rel-low { background: rgba(255,107,107,0.2); color: #ff6b6b; }
     .link-cell a { color: var(--suede); text-decoration: none; font-size: 12px; }
     .link-cell a:hover { color: var(--monday); text-decoration: underline; }
     .date { font-size: 12px; color: rgba(255,255,255,0.5); white-space: nowrap; }
@@ -218,6 +222,7 @@
             <th>Link</th>
             <th>Keyword</th>
             <th>Topic</th>
+            <th>Relevance</th>
             <th>Country</th>
             <th>Date</th>
             <th>Actions</th>
@@ -305,7 +310,7 @@
       const tbody = document.getElementById('table-body');
 
       if (!data || data.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;padding:40px;color:rgba(255,255,255,0.5);">No data found</td></tr>';
+        tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;padding:40px;color:rgba(255,255,255,0.5);">No data found</td></tr>';
         document.getElementById('showing').textContent = 'No items';
         return;
       }
@@ -321,11 +326,14 @@
         const cc = countryClass(r.country);
         const isInstaLink = r.link && r.link.includes('instagram.com');
 
+        const relClass = r.relevance ? `rel-${r.relevance.toLowerCase().replace(/\s+/g, '-')}` : '';
+
         return `<tr>
           <td class="caption-cell">${r.row ? `<div class="caption-text truncate" onclick="openRowModal(${idx})">${rowPreview}</div>` : '<span class="no-data">-</span>'}</td>
           <td class="link-cell">${r.link ? `<a href="${r.link}" target="_blank">${isInstaLink ? '📸 Open' : '🔗 Open'}</a>` : '-'}</td>
           <td><span class="keyword">${r.keyword || '-'}</span></td>
           <td>${r.topic ? `<span class="topic-tag">${r.topic}</span>` : '<span class="no-data">-</span>'}</td>
+          <td>${r.relevance ? `<span class="relevance-tag ${relClass}">${r.relevance}</span>` : '<span class="no-data">—</span>'}</td>
           <td>${r.country ? `<span class="country-tag ${cc}">${r.country}</span>` : '<span class="no-data">—</span>'}</td>
           <td class="date">${date}</td>
           <td class="actions">
