@@ -91,6 +91,16 @@
     .date { font-size: 12px; color: rgba(255,255,255,0.5); white-space: nowrap; }
     .duration { font-size: 12px; color: rgba(255,255,255,0.6); white-space: nowrap; }
 
+    .country-tag { font-size: 11px; padding: 3px 8px; border-radius: 12px; display: inline-block; font-weight: 600; }
+    .country-tag.uae { background: rgba(199,248,186,0.2); color: var(--day); }
+    .country-tag.ksa { background: rgba(0,165,211,0.2); color: var(--suede); }
+    .country-tag.bahrain { background: rgba(138,43,226,0.2); color: #b388ff; }
+    .country-tag.oman { background: rgba(255,107,107,0.2); color: #ff6b6b; }
+    .country-tag.qatar { background: rgba(255,215,0,0.2); color: #ffd700; }
+    .country-tag.kuwait { background: rgba(121,226,255,0.2); color: var(--monday); }
+    .country-tag.india { background: rgba(255,165,0,0.2); color: #ffa500; }
+    .country-tag.unknown { background: rgba(255,255,255,0.1); color: rgba(255,255,255,0.5); }
+
     /* Action buttons */
     .actions { display: flex; gap: 6px; flex-wrap: wrap; }
     .action-btn { padding: 5px 10px; border: none; border-radius: 6px; font-size: 11px; font-weight: 600; cursor: pointer; font-family: 'Inter', sans-serif; transition: all 0.2s; white-space: nowrap; }
@@ -123,9 +133,59 @@
     .copy-btn.copied { background: var(--day); color: var(--storm); }
 
     .footer { text-align: center; padding: 24px; font-size: 12px; color: rgba(255,255,255,0.3); }
+
+    /* Cat Preloader */
+    .preloader { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: linear-gradient(135deg, var(--storm) 0%, var(--electro) 100%); display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 9999; transition: opacity 0.5s ease, visibility 0.5s ease; }
+    .preloader.hidden { opacity: 0; visibility: hidden; pointer-events: none; }
+    .cat-loader { position: relative; width: 120px; height: 140px; animation: catFloat 2s ease-in-out infinite; }
+    .cat-body { position: absolute; bottom: 0; left: 50%; transform: translateX(-50%); width: 80px; height: 60px; background: var(--monday); border-radius: 40px 40px 30px 30px; box-shadow: 0 0 30px rgba(121,226,255,0.3); }
+    .cat-head { position: absolute; top: 20px; left: 50%; transform: translateX(-50%); width: 56px; height: 48px; background: var(--monday); border-radius: 50% 50% 45% 45%; z-index: 2; }
+    .cat-ear { position: absolute; top: 6px; width: 0; height: 0; border-left: 12px solid transparent; border-right: 12px solid transparent; border-bottom: 20px solid var(--monday); z-index: 3; }
+    .cat-ear.left { left: 18px; transform: rotate(-15deg); }
+    .cat-ear.right { right: 18px; transform: rotate(15deg); }
+    .cat-eye { position: absolute; top: 20px; width: 8px; height: 10px; background: var(--storm); border-radius: 50%; animation: catBlink 3s ease-in-out infinite; }
+    .cat-eye.left { left: 14px; }
+    .cat-eye.right { right: 14px; }
+    .cat-nose { position: absolute; top: 30px; left: 50%; transform: translateX(-50%); width: 6px; height: 5px; background: #ffb3c1; border-radius: 50% 50% 40% 40%; }
+    .cat-tail { position: absolute; bottom: 15px; right: -15px; width: 40px; height: 40px; border: 4px solid var(--monday); border-color: var(--monday) var(--monday) transparent transparent; border-radius: 0 20px 0 0; animation: tailWag 1s ease-in-out infinite; transform-origin: left bottom; }
+    .cat-paws { position: absolute; bottom: -8px; left: 50%; transform: translateX(-50%); display: flex; gap: 20px; }
+    .cat-paw { width: 16px; height: 10px; background: var(--monday); border-radius: 50%; opacity: 0.8; }
+    .preloader-text { margin-top: 32px; font-family: 'Inter', sans-serif; font-size: 16px; color: rgba(255,255,255,0.7); font-weight: 500; letter-spacing: 1px; }
+    .preloader-text .dot { animation: dotBounce 1.4s ease-in-out infinite; display: inline-block; }
+    .preloader-text .dot:nth-child(2) { animation-delay: 0.2s; }
+    .preloader-text .dot:nth-child(3) { animation-delay: 0.4s; }
+    .paw-trail { margin-top: 20px; display: flex; gap: 12px; }
+    .paw-print { font-size: 16px; opacity: 0; animation: pawFade 2s ease-in-out infinite; }
+    .paw-print:nth-child(1) { animation-delay: 0s; }
+    .paw-print:nth-child(2) { animation-delay: 0.3s; }
+    .paw-print:nth-child(3) { animation-delay: 0.6s; }
+    .paw-print:nth-child(4) { animation-delay: 0.9s; }
+    @keyframes catFloat { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
+    @keyframes tailWag { 0%, 100% { transform: rotate(0deg); } 50% { transform: rotate(15deg); } }
+    @keyframes catBlink { 0%, 90%, 100% { transform: scaleY(1); } 95% { transform: scaleY(0.1); } }
+    @keyframes dotBounce { 0%, 80%, 100% { transform: translateY(0); } 40% { transform: translateY(-6px); } }
+    @keyframes pawFade { 0%, 100% { opacity: 0; transform: translateY(0); } 50% { opacity: 0.6; transform: translateY(-5px); } }
   </style>
 </head>
 <body>
+  <div class="preloader" id="preloader">
+    <div class="cat-loader">
+      <div class="cat-ear left"></div>
+      <div class="cat-ear right"></div>
+      <div class="cat-head">
+        <div class="cat-eye left"></div>
+        <div class="cat-eye right"></div>
+        <div class="cat-nose"></div>
+      </div>
+      <div class="cat-body"></div>
+      <div class="cat-tail"></div>
+      <div class="cat-paws"><div class="cat-paw"></div><div class="cat-paw"></div></div>
+    </div>
+    <div class="preloader-text">Fetching data<span class="dot">.</span><span class="dot">.</span><span class="dot">.</span></div>
+    <div class="paw-trail">
+      <span class="paw-print">🐾</span><span class="paw-print">🐾</span><span class="paw-print">🐾</span><span class="paw-print">🐾</span>
+    </div>
+  </div>
   <div class="container">
     <nav class="nav">
       <a href="statistics.html">📊 Statistics</a>
@@ -175,6 +235,7 @@
           <option value="Kuwait">🇰🇼 Kuwait</option>
           <option value="Qatar">🇶🇦 Qatar</option>
           <option value="Oman">🇴🇲 Oman</option>
+          <option value="India">🇮🇳 India</option>
           <option value="other">🌐 Other</option>
         </select>
       </div>
@@ -188,7 +249,7 @@
       </div>
       <div class="quick-btns">
         <button class="quick-btn" onclick="quickFilter('24h')">Last 24h</button>
-        <button class="quick-btn" onclick="quickFilter('7d')">Last 7d</button>
+        <button class="quick-btn active" onclick="quickFilter('7d')">Last 7d</button>
         <button class="quick-btn" onclick="quickFilter('30d')">Last 30d</button>
         <button class="quick-btn" onclick="clearFilters()">✖ Clear</button>
       </div>
@@ -214,6 +275,7 @@
             <th>Duration</th>
             <th>Theme</th>
             <th>Category</th>
+            <th>Country</th>
             <th>Hook</th>
             <th>Status</th>
             <th>Actions</th>
@@ -252,13 +314,24 @@
   <script>
     const API_BASE = '/api';
 
+    function hidePreloader() {
+      const p = document.getElementById('preloader');
+      if (p) p.classList.add('hidden');
+    }
+
     let currentPage = 1;
     let totalCount = 0;
     let currentSort = 'added_date';
     let currentDir = 'desc';
     let currentTab = 'all';
     let modalText = '';
+    let rowsData = [];
     const perPage = 30;
+
+    function countryClass(c) {
+      if (!c) return 'unknown';
+      return c.toLowerCase().replace(/\s+/g, '');
+    }
 
     const fmt = n => n != null ? Number(n).toLocaleString() : '-';
     const fmtPct = n => n != null ? Number(n).toFixed(2) + '%' : '-';
@@ -347,20 +420,22 @@
       renderTable(data);
       updatePagination();
       document.getElementById('updated-time').textContent = new Date().toLocaleTimeString();
+      hidePreloader();
     }
 
     function renderTable(data) {
       const tbody = document.getElementById('table-body');
 
       if (!data || data.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="15" style="text-align:center;padding:40px;color:rgba(255,255,255,0.5);">No reels found</td></tr>';
+        tbody.innerHTML = '<tr><td colspan="16" style="text-align:center;padding:40px;color:rgba(255,255,255,0.5);">No reels found</td></tr>';
         document.getElementById('showing').textContent = 'No items';
         return;
       }
 
       document.getElementById('showing').textContent = `Showing ${(currentPage-1)*perPage + 1}-${Math.min(currentPage*perPage, totalCount)} of ${totalCount.toLocaleString()} reels`;
 
-      tbody.innerHTML = data.map(r => {
+      rowsData = data;
+      tbody.innerHTML = data.map((r, idx) => {
         const handle = extractHandle(r.account_url);
         const postedDate = r.posted_date ? new Date(r.posted_date).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit' }) : '-';
         const addedDate = r.added_date ? new Date(r.added_date).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit' }) : '-';
@@ -376,8 +451,7 @@
         const l = Number(r.likes) || 0;
         const c = Number(r.comments) || 0;
         const er = v > 0 ? ((l + c) / v * 100) : 0;
-        const themeEscaped = (r.theme || '').replace(/`/g, '\\`').replace(/\$/g, '\\$');
-        const hookEscaped = (r.hook || '').replace(/`/g, '\\`').replace(/\$/g, '\\$');
+        const cc = countryClass(r.country);
 
         return `<tr>
           <td class="account">${r.account_url ? `<a href="${r.account_url}" target="_blank">${handle}</a>` : '-'}</td>
@@ -389,9 +463,10 @@
           <td><span class="metric er">${er.toFixed(2)}%</span></td>
           <td>${r.virus_detector != null ? `<span class="virus-score ${vc}">${Number(r.virus_detector).toFixed(0)}</span>` : '<span class="no-data">-</span>'}</td>
           <td class="duration">${formatDuration(r.duration_sec)}</td>
-          <td class="theme-cell">${r.theme ? `<div class="theme-text truncate" onclick="openModal('Theme', \`${themeEscaped}\`)">${themePreview}</div>` : '<span class="no-data">—</span>'}</td>
+          <td class="theme-cell">${r.theme ? `<div class="theme-text truncate" onclick="openRowModal(${idx}, 'theme', 'Theme')">${themePreview}</div>` : '<span class="no-data">—</span>'}</td>
           <td class="category-cell"><div class="truncate">${catPreview || '<span class="no-data">—</span>'}</div></td>
-          <td class="hook-cell">${r.hook ? `<div class="hook-text truncate" onclick="openModal('Hook', \`${hookEscaped}\`)">${hookPreview}</div>` : '<span class="no-data">—</span>'}</td>
+          <td>${r.country ? `<span class="country-tag ${cc}">${r.country}</span>` : '<span class="no-data">—</span>'}</td>
+          <td class="hook-cell">${r.hook ? `<div class="hook-text truncate" onclick="openRowModal(${idx}, 'hook', 'Hook')">${hookPreview}</div>` : '<span class="no-data">—</span>'}</td>
           <td><span class="status ${isSent ? 'sent' : 'pending'}">${isSent ? '✓ Sent' : '○ Pending'}</span></td>
           <td class="actions">
             <button class="action-btn social-btn ${isSocial ? 'active' : ''}" onclick="toggleStatus('${r.id}', 'posted_socials', ${isSocial})">${isSocial ? '✓ Social' : '○ Social'}</button>
@@ -400,6 +475,11 @@
           <td class="date">${addedDate}</td>
         </tr>`;
       }).join('');
+    }
+
+    function openRowModal(idx, field, title) {
+      const text = rowsData[idx]?.[field] || '';
+      openModal(title, text);
     }
 
     function openModal(title, text) {
@@ -492,7 +572,8 @@
       document.getElementById(id).addEventListener('change', () => { currentPage = 1; loadData(); });
     });
 
-    // Initialize
+    // Initialize with last 7 days default
+    document.getElementById('filter-from').value = new Date(Date.now() - 7*24*60*60*1000).toISOString().split('T')[0];
     loadData();
     setInterval(loadData, 120000);
   </script>

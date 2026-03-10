@@ -144,9 +144,60 @@
     .no-desc { color: rgba(255,255,255,0.3); font-size: 12px; }
 
     .footer { text-align: center; padding: 24px; font-size: 12px; color: rgba(255,255,255,0.3); }
+
+    /* Preloader */
+    .preloader { position: fixed; inset: 0; background: var(--storm); z-index: 9999; display: flex; flex-direction: column; align-items: center; justify-content: center; transition: opacity 0.6s ease, visibility 0.6s ease; }
+    .preloader.hidden { opacity: 0; visibility: hidden; pointer-events: none; }
+    .cat-loader { position: relative; width: 100px; height: 85px; margin-bottom: 24px; animation: catFloat 2s ease-in-out infinite; }
+    .cat-body { position: absolute; bottom: 0; left: 18px; width: 55px; height: 38px; background: var(--monday); border-radius: 50% 50% 40% 40%; box-shadow: 0 0 20px rgba(121,226,255,0.3); }
+    .cat-head { position: absolute; top: 8px; left: 0; width: 38px; height: 34px; background: var(--monday); border-radius: 50% 50% 40% 40%; box-shadow: 0 0 15px rgba(121,226,255,0.3); }
+    .cat-ear { position: absolute; top: 0; width: 0; height: 0; border-left: 7px solid transparent; border-right: 7px solid transparent; border-bottom: 14px solid var(--monday); }
+    .cat-ear.left { left: 3px; transform: rotate(-10deg); }
+    .cat-ear.right { left: 22px; transform: rotate(10deg); }
+    .cat-eye { position: absolute; top: 20px; width: 5px; height: 7px; background: var(--storm); border-radius: 50%; animation: catBlink 3s ease-in-out infinite; }
+    .cat-eye.left { left: 10px; }
+    .cat-eye.right { left: 23px; }
+    .cat-nose { position: absolute; top: 28px; left: 15px; width: 6px; height: 4px; background: rgba(255,150,150,0.8); border-radius: 50%; }
+    .cat-tail { position: absolute; bottom: 10px; right: 0; width: 35px; height: 25px; border: 3.5px solid var(--monday); border-color: transparent var(--monday) transparent transparent; border-radius: 0 50% 50% 0; animation: tailWag 1.2s ease-in-out infinite; transform-origin: left bottom; filter: drop-shadow(0 0 8px rgba(121,226,255,0.3)); }
+    .cat-paws { position: absolute; bottom: -4px; left: 24px; display: flex; gap: 16px; }
+    .cat-paw { width: 10px; height: 6px; background: var(--monday); border-radius: 50%; }
+    @keyframes catFloat { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-6px); } }
+    @keyframes tailWag { 0%, 100% { transform: rotate(-20deg); } 50% { transform: rotate(20deg); } }
+    @keyframes catBlink { 0%, 42%, 44%, 100% { transform: scaleY(1); } 43% { transform: scaleY(0.1); } }
+    .preloader-text { color: var(--monday); font-size: 15px; font-weight: 600; letter-spacing: 1px; }
+    .preloader-text .dot { display: inline-block; animation: dotBounce 1.4s ease-in-out infinite; }
+    .preloader-text .dot:nth-child(2) { animation-delay: 0.2s; }
+    .preloader-text .dot:nth-child(3) { animation-delay: 0.4s; }
+    @keyframes dotBounce { 0%, 60%, 100% { transform: translateY(0); } 30% { transform: translateY(-8px); } }
+    .paw-trail { display: flex; gap: 18px; margin-top: 16px; opacity: 0.3; }
+    .paw-print { font-size: 12px; animation: pawFade 2s ease-in-out infinite; }
+    .paw-print:nth-child(2) { animation-delay: 0.3s; }
+    .paw-print:nth-child(3) { animation-delay: 0.6s; }
+    .paw-print:nth-child(4) { animation-delay: 0.9s; }
+    @keyframes pawFade { 0%, 100% { opacity: 0.2; transform: scale(0.8); } 50% { opacity: 1; transform: scale(1.1); } }
   </style>
 </head>
 <body>
+  <!-- Preloader -->
+  <div class="preloader" id="preloader">
+    <div class="cat-loader">
+      <div class="cat-ear left"></div>
+      <div class="cat-ear right"></div>
+      <div class="cat-head">
+        <div class="cat-eye left"></div>
+        <div class="cat-eye right"></div>
+        <div class="cat-nose"></div>
+      </div>
+      <div class="cat-body"></div>
+      <div class="cat-tail"></div>
+      <div class="cat-paws"><div class="cat-paw"></div><div class="cat-paw"></div></div>
+    </div>
+    <div class="preloader-text">Fetching data<span class="dot">.</span><span class="dot">.</span><span class="dot">.</span></div>
+    <div class="paw-trail">
+      <span class="paw-print">🐾</span><span class="paw-print">🐾</span><span class="paw-print">🐾</span><span class="paw-print">🐾</span>
+    </div>
+  </div>
+
   <div class="container">
     <nav class="nav">
       <a href="statistics.html">📊 Statistics</a>
@@ -213,7 +264,7 @@
       <div class="quick-btns">
         <button class="quick-btn" onclick="quickFilter('3h')">⏱️ Last 3h</button>
         <button class="quick-btn" onclick="quickFilter('24h')">Last 24h</button>
-        <button class="quick-btn" onclick="quickFilter('7d')">Last 7d</button>
+        <button class="quick-btn active" onclick="quickFilter('7d')">Last 7d</button>
         <button class="quick-btn high-btn" onclick="quickFilter('high')">✅ High Only</button>
         <button class="quick-btn medium-btn" onclick="quickFilter('high-medium')">✅☑️ High & Medium</button>
         <button class="quick-btn low-btn" onclick="quickFilter('low')">❌ Low Only</button>
@@ -236,7 +287,7 @@
             <th>Source URL</th>
             <th>Draft EN</th>
             <th>Draft AR</th>
-            <th>Region</th>
+            <th>Country</th>
             <th>Relevance</th>
             <th>Status</th>
             <th>Date</th>
@@ -303,7 +354,20 @@
     let flaggingId = null;
     let flaggedIds = new Set();
     let currentDescription = '';
+    let rowsData = [];
     const perPage = 30;
+
+    function cleanUrl(url) {
+      if (!url) return null;
+      const locMatch = url.match(/<loc>(.*?)<\/loc>/);
+      if (locMatch) return locMatch[1];
+      return url;
+    }
+
+    function hidePreloader() {
+      const p = document.getElementById('preloader');
+      if (p) p.classList.add('hidden');
+    }
 
     // Fetch count from secure API
     async function fetchCount(type) {
@@ -340,14 +404,14 @@
     }
 
     async function loadCounts() {
-      const [allCount, doneCount, flaggedCount] = await Promise.all([
-        fetchCount('pending'),
-        fetchCount('done'),
-        fetchCount('flagged')
-      ]);
-      document.getElementById('count-all').textContent = allCount.toLocaleString();
-      document.getElementById('count-done').textContent = doneCount.toLocaleString();
-      document.getElementById('count-flagged').textContent = flaggedCount.toLocaleString();
+      const tabs = ['all', 'done', 'flagged'];
+      const counts = await Promise.all(tabs.map(async t => {
+        const result = await fetchLinks({ tab: t, page: 0, limit: 1 });
+        return result.total || 0;
+      }));
+      document.getElementById('count-all').textContent = counts[0].toLocaleString();
+      document.getElementById('count-done').textContent = counts[1].toLocaleString();
+      document.getElementById('count-flagged').textContent = counts[2].toLocaleString();
     }
 
     function switchTab(tab) {
@@ -384,6 +448,7 @@
       renderTable(data);
       updatePagination();
       document.getElementById('updated-time').textContent = new Date().toLocaleTimeString();
+      hidePreloader();
     }
 
     function renderTable(data) {
@@ -397,7 +462,8 @@
 
       document.getElementById('showing').textContent = `Showing ${(currentPage-1)*perPage + 1}-${Math.min(currentPage*perPage, totalCount)} of ${totalCount.toLocaleString()} articles`;
 
-      tbody.innerHTML = data.map(r => {
+      rowsData = data;
+      tbody.innerHTML = data.map((r, idx) => {
         const relClass = r.relevance?.includes('high') ? 'high' : r.relevance?.includes('medium') ? 'medium' : r.relevance?.includes('low') ? 'low' : '';
         const relText = r.relevance?.includes('high') ? 'High' : r.relevance?.includes('medium') ? 'Medium' : r.relevance?.includes('low') ? 'Low' : '-';
         const isDone = r.done && r.done.trim() !== '';
@@ -407,24 +473,24 @@
         const date = r.uploaded_at ? new Date(r.uploaded_at).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit' }) : '-';
         const desc = r.description || '';
         const descPreview = desc ? (desc.length > 80 ? desc.slice(0, 80) + '...' : desc) : '';
-        const descEscaped = desc.replace(/`/g, '\\`').replace(/\$/g, '\\$');
+        const sourceUrl = cleanUrl(r.url);
 
         return `<tr>
           <td><span class="domain">${r.domain || '-'}</span></td>
           <td class="title-cell">
-            <div class="title-text truncate" onclick="toggleExpand(this)">${r.title || r.url || '-'}</div>
+            <div class="title-text truncate" onclick="toggleExpand(this)">${r.title || sourceUrl || '-'}</div>
             ${(r.title || r.url) ? '<div class="expand-hint">click to expand</div>' : ''}
           </td>
           <td class="desc-cell">
-            ${desc ? `<div class="desc-preview" onclick="openDescModal(\`${descEscaped}\`)">
+            ${desc ? `<div class="desc-preview" onclick="openDescModal(${idx})">
               <span class="desc-preview-text">${descPreview}</span>
               <span class="desc-preview-icon">👁️</span>
             </div>` : '<span class="no-desc">—</span>'}
           </td>
-          <td>${r.url ? `<a href="${r.url}" target="_blank" class="source-link" title="${r.url}">🔗</a>` : '-'}</td>
+          <td>${sourceUrl ? `<a href="${sourceUrl}" target="_blank" class="source-link" title="${sourceUrl}">🔗</a>` : '-'}</td>
           <td>${r.eng_blog_url ? `<a href="${r.eng_blog_url}" target="_blank" class="draft-link">📄 Draft EN</a>` : '<span class="no-draft">—</span>'}</td>
           <td>${r.ar_blog_url ? `<a href="${r.ar_blog_url}" target="_blank" class="draft-link ar">📄 Draft AR</a>` : '<span class="no-draft">—</span>'}</td>
-          <td class="region">${r.region || '-'} ${r.region_emoji || ''}</td>
+          <td class="region">${r.country || '-'}</td>
           <td>${relClass ? `<span class="relevance ${relClass}">${relText}</span>` : '-'}</td>
           <td><span class="status ${isDone ? 'done' : 'pending'}">${isDone ? '✓ Done' : '○ Pending'}</span></td>
           <td class="date">${date}</td>
@@ -452,7 +518,8 @@
     }
 
     // Description Modal Functions
-    function openDescModal(description) {
+    function openDescModal(idx) {
+      const description = rowsData[idx]?.description || '';
       currentDescription = description;
       document.getElementById('desc-modal-content').textContent = description;
       document.getElementById('desc-modal').classList.add('show');
@@ -585,7 +652,8 @@
       document.getElementById(id).addEventListener('change', () => { currentPage = 1; loadData(); });
     });
 
-    // Initialize
+    // Initialize - default last 7 days
+    document.getElementById('filter-from').value = new Date(Date.now() - 7*24*60*60*1000).toISOString().split('T')[0];
     loadData();
     setInterval(loadData, 120000);
   </script>

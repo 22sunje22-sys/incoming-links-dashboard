@@ -79,11 +79,61 @@
     .footer { text-align: center; padding: 32px; font-size: 12px; color: rgba(255,255,255,0.3); }
     .refresh-time { font-size: 14px; color: rgba(255,255,255,0.5); margin-top: 8px; }
 
+    /* Cat Preloader */
+    .preloader { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: linear-gradient(135deg, var(--storm) 0%, var(--electro) 100%); display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 9999; transition: opacity 0.5s ease, visibility 0.5s ease; }
+    .preloader.hidden { opacity: 0; visibility: hidden; pointer-events: none; }
+    .cat-loader { position: relative; width: 120px; height: 140px; animation: catFloat 2s ease-in-out infinite; }
+    .cat-body { position: absolute; bottom: 0; left: 50%; transform: translateX(-50%); width: 80px; height: 60px; background: var(--monday); border-radius: 40px 40px 30px 30px; box-shadow: 0 0 30px rgba(121,226,255,0.3); }
+    .cat-head { position: absolute; top: 20px; left: 50%; transform: translateX(-50%); width: 56px; height: 48px; background: var(--monday); border-radius: 50% 50% 45% 45%; z-index: 2; }
+    .cat-ear { position: absolute; top: 6px; width: 0; height: 0; border-left: 12px solid transparent; border-right: 12px solid transparent; border-bottom: 20px solid var(--monday); z-index: 3; }
+    .cat-ear.left { left: 18px; transform: rotate(-15deg); }
+    .cat-ear.right { right: 18px; transform: rotate(15deg); }
+    .cat-eye { position: absolute; top: 20px; width: 8px; height: 10px; background: var(--storm); border-radius: 50%; animation: catBlink 3s ease-in-out infinite; }
+    .cat-eye.left { left: 14px; }
+    .cat-eye.right { right: 14px; }
+    .cat-nose { position: absolute; top: 30px; left: 50%; transform: translateX(-50%); width: 6px; height: 5px; background: #ffb3c1; border-radius: 50% 50% 40% 40%; }
+    .cat-tail { position: absolute; bottom: 15px; right: -15px; width: 40px; height: 40px; border: 4px solid var(--monday); border-color: var(--monday) var(--monday) transparent transparent; border-radius: 0 20px 0 0; animation: tailWag 1s ease-in-out infinite; transform-origin: left bottom; }
+    .cat-paws { position: absolute; bottom: -8px; left: 50%; transform: translateX(-50%); display: flex; gap: 20px; }
+    .cat-paw { width: 16px; height: 10px; background: var(--monday); border-radius: 50%; opacity: 0.8; }
+    .preloader-text { margin-top: 32px; font-family: 'Inter', sans-serif; font-size: 16px; color: rgba(255,255,255,0.7); font-weight: 500; letter-spacing: 1px; }
+    .preloader-text .dot { animation: dotBounce 1.4s ease-in-out infinite; display: inline-block; }
+    .preloader-text .dot:nth-child(2) { animation-delay: 0.2s; }
+    .preloader-text .dot:nth-child(3) { animation-delay: 0.4s; }
+    .paw-trail { margin-top: 20px; display: flex; gap: 12px; }
+    .paw-print { font-size: 16px; opacity: 0; animation: pawFade 2s ease-in-out infinite; }
+    .paw-print:nth-child(1) { animation-delay: 0s; }
+    .paw-print:nth-child(2) { animation-delay: 0.3s; }
+    .paw-print:nth-child(3) { animation-delay: 0.6s; }
+    .paw-print:nth-child(4) { animation-delay: 0.9s; }
+    @keyframes catFloat { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
+    @keyframes tailWag { 0%, 100% { transform: rotate(0deg); } 50% { transform: rotate(15deg); } }
+    @keyframes catBlink { 0%, 90%, 100% { transform: scaleY(1); } 95% { transform: scaleY(0.1); } }
+    @keyframes dotBounce { 0%, 80%, 100% { transform: translateY(0); } 40% { transform: translateY(-6px); } }
+    @keyframes pawFade { 0%, 100% { opacity: 0; transform: translateY(0); } 50% { opacity: 0.6; transform: translateY(-5px); } }
+
     @media (max-width: 1200px) { .stats-grid { grid-template-columns: repeat(3, 1fr); } .article-stats-grid { grid-template-columns: repeat(3, 1fr); } }
     @media (max-width: 768px) { .charts-grid { grid-template-columns: 1fr; } .chart-card.full-width { grid-column: span 1; } .stats-grid { grid-template-columns: repeat(2, 1fr); } .article-stats-grid { grid-template-columns: repeat(2, 1fr); } .filters { flex-direction: column; align-items: stretch; } }
   </style>
 </head>
 <body>
+  <div class="preloader" id="preloader">
+    <div class="cat-loader">
+      <div class="cat-ear left"></div>
+      <div class="cat-ear right"></div>
+      <div class="cat-head">
+        <div class="cat-eye left"></div>
+        <div class="cat-eye right"></div>
+        <div class="cat-nose"></div>
+      </div>
+      <div class="cat-body"></div>
+      <div class="cat-tail"></div>
+      <div class="cat-paws"><div class="cat-paw"></div><div class="cat-paw"></div></div>
+    </div>
+    <div class="preloader-text">Fetching data<span class="dot">.</span><span class="dot">.</span><span class="dot">.</span></div>
+    <div class="paw-trail">
+      <span class="paw-print">🐾</span><span class="paw-print">🐾</span><span class="paw-print">🐾</span><span class="paw-print">🐾</span>
+    </div>
+  </div>
   <div class="container">
     <nav class="nav">
       <a href="statistics.html" class="active">📊 Statistics</a>
@@ -110,10 +160,10 @@
         <input type="date" id="filter-to">
       </div>
       <div class="quick-btns">
-        <button class="quick-btn" onclick="quickFilter('7d')">Last 7d</button>
-        <button class="quick-btn active" onclick="quickFilter('30d')">Last 30d</button>
-        <button class="quick-btn" onclick="quickFilter('90d')">Last 90d</button>
-        <button class="quick-btn" onclick="quickFilter('all')">All Time</button>
+        <button class="quick-btn active" onclick="quickFilter('7d', event)">Last 7d</button>
+        <button class="quick-btn" onclick="quickFilter('30d', event)">Last 30d</button>
+        <button class="quick-btn" onclick="quickFilter('90d', event)">Last 90d</button>
+        <button class="quick-btn" onclick="quickFilter('all', event)">All Time</button>
       </div>
       <button class="btn" onclick="loadStats()">↻ Apply</button>
     </div>
@@ -191,20 +241,25 @@
     // NO SUPABASE KEY EXPOSED - All calls go through secure API proxy
     const API_BASE = '/api';
     let charts = {};
-    let currentPeriod = '30d';
+    let currentPeriod = '7d';
 
-    // Set default dates (last 30 days)
-    function initDates() {
-      const today = new Date();
-      const thirtyDaysAgo = new Date(Date.now() - 30*24*60*60*1000);
-      document.getElementById('filter-to').value = today.toISOString().split('T')[0];
-      document.getElementById('filter-from').value = thirtyDaysAgo.toISOString().split('T')[0];
+    function hidePreloader() {
+      const p = document.getElementById('preloader');
+      if (p) p.classList.add('hidden');
     }
 
-    function quickFilter(period) {
+    // Set default dates (last 7 days)
+    function initDates() {
+      const today = new Date();
+      const sevenDaysAgo = new Date(Date.now() - 7*24*60*60*1000);
+      document.getElementById('filter-to').value = today.toISOString().split('T')[0];
+      document.getElementById('filter-from').value = sevenDaysAgo.toISOString().split('T')[0];
+    }
+
+    function quickFilter(period, e) {
       currentPeriod = period;
       document.querySelectorAll('.quick-btn').forEach(b => b.classList.remove('active'));
-      event.target.classList.add('active');
+      if (e) e.target.classList.add('active');
 
       const today = new Date();
       let fromDate;
@@ -222,15 +277,6 @@
       document.getElementById('filter-to').value = today.toISOString().split('T')[0];
       document.getElementById('filter-from').value = fromDate.toISOString().split('T')[0];
       loadStats();
-    }
-
-    function getDateFilter() {
-      const from = document.getElementById('filter-from').value;
-      const to = document.getElementById('filter-to').value;
-      let filter = '';
-      if (from) filter += `&uploaded_at=gte.${from}T00:00:00`;
-      if (to) filter += `&uploaded_at=lte.${to}T23:59:59`;
-      return filter;
     }
 
     // Use API proxy for secure stats fetching
@@ -264,19 +310,17 @@
       el.textContent = text;
     }
 
-    async function fetchData(endpoint, options = {}) {
+    async function fetchAllLinks(dateFrom, dateTo) {
       const params = new URLSearchParams();
-      params.append('table', endpoint);
-      if (options.select) params.append('select', options.select);
-      if (options.order) params.append('order', options.order);
-      if (options.limit) params.append('limit', options.limit);
-      Object.keys(options).forEach(k => {
-        if (!['select', 'order', 'limit', 'table'].includes(k)) params.append(k, options[k]);
-      });
+      params.append('mode', 'stats');
+      params.append('page', '0');
+      params.append('limit', '100000');
+      if (dateFrom) params.append('dateFrom', dateFrom);
+      if (dateTo) params.append('dateTo', dateTo);
       const response = await fetch(`${API_BASE}/links?${params}`);
-const result = await response.json();
-            return result.data || result;
-          }
+      const result = await response.json();
+      return result.data || [];
+    }
 
     const fmt = n => n?.toLocaleString() || '0';
 
@@ -319,15 +363,10 @@ const result = await response.json();
         fetchCount('flagged', prevFrom, prevTo)
       ]);
 
-      // Get domain counts for selected period
-      const dateFilter = getDateFilter();
-      const domainData = await fetchData('incoming_links', {
-        select: 'domain',
-        limit: 100000,
-        ...(from && { 'uploaded_at': `gte.${from}T00:00:00` })
-      });
+      // Get all links for selected period (used for domains + chart)
+      const allLinksData = await fetchAllLinks(from, to);
       const domains = {};
-      domainData.forEach(d => { if (d.domain) domains[d.domain] = (domains[d.domain] || 0) + 1; });
+      allLinksData.forEach(d => { if (d.domain) domains[d.domain] = (domains[d.domain] || 0) + 1; });
 
       document.getElementById('stat-total').textContent = fmt(total);
       document.getElementById('stat-high').textContent = fmt(high);
@@ -343,11 +382,7 @@ const result = await response.json();
       setGrowth('growth-done', done, pDone);
 
       // Domains growth: compare unique domain counts
-      const prevDomainData = await fetchData('incoming_links', {
-        select: 'domain',
-        limit: 100000,
-        ...(prevFrom && { 'uploaded_at': `gte.${prevFrom}T00:00:00` })
-      });
+      const prevDomainData = await fetchAllLinks(prevFrom, prevTo);
       const prevDomains = {};
       prevDomainData.forEach(d => { if (d.domain) prevDomains[d.domain] = (prevDomains[d.domain] || 0) + 1; });
       setGrowth('growth-domains', Object.keys(domains).length, Object.keys(prevDomains).length);
@@ -363,17 +398,10 @@ const result = await response.json();
       setGrowth('growth-published', done, pDone);
       setGrowth('growth-flagged', flagged, pFlagged);
 
-      // Get data for chart within selected period
-      const chartData = await fetchData('incoming_links', {
-        select: 'uploaded_at',
-        'uploaded_at': `gte.${from}T00:00:00`,
-        limit: 100000
-      });
+      // Reuse allLinksData for chart (already filtered by date range)
+      const filteredData = allLinksData;
 
-      // Filter by to date as well
-      const filteredData = to ? chartData.filter(d => d.uploaded_at <= `${to}T23:59:59`) : chartData;
-
-      document.getElementById('art-avg').textContent = daysDiff > 0 ? Math.round(filteredData.length / daysDiff) : '-';
+      document.getElementById('art-avg').textContent = daysDiff > 0 ? Math.round(allLinksData.length / daysDiff) : '-';
       document.getElementById('art-avg-label').textContent = `${daysDiff} days`;
 
       // Domains list
@@ -384,6 +412,7 @@ const result = await response.json();
 
       updateCharts(filteredData, domains, { high, medium, low, notSet: total - high - medium - low });
       document.getElementById('last-update').textContent = new Date().toLocaleTimeString();
+      hidePreloader();
     }
 
     function updateCharts(recentData, domains, relevanceCounts) {
