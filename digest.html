@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AI Digest - Incoming Links</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root { --storm: #0A181C; --monday: #79E2FF; --day: #C7F8BA; --suede: #00A5D3; --electro: #221327; --purple: #a78bfa; }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: 'Inter', sans-serif; background: linear-gradient(135deg, var(--storm) 0%, var(--electro) 100%); min-height: 100vh; color: white; }
+    .container { max-width: 1400px; margin: 0 auto; padding: 24px; }
+
+    .nav { display: flex; gap: 12px; margin-bottom: 32px; }
+    .nav a { padding: 12px 24px; background: rgba(255,255,255,0.1); border-radius: 8px; color: white; text-decoration: none; font-weight: 600; font-size: 14px; transition: all 0.2s; }
+    .nav a:hover { background: rgba(255,255,255,0.2); }
+    .nav a.active { background: var(--purple); color: white; }
+
+    .header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 24px; flex-wrap: wrap; gap: 20px; }
+    .header-left h1 { font-size: 36px; font-weight: 800; color: var(--purple); text-transform: uppercase; letter-spacing: -1px; }
+    .header-left p { color: rgba(255,255,255,0.6); margin-top: 8px; font-size: 16px; }
+    .header-right { display: flex; align-items: center; gap: 12px; }
+
+    .btn { padding: 10px 18px; background: var(--suede); color: white; border: none; border-radius: 8px; font-size: 13px; font-weight: 600; cursor: pointer; font-family: 'Inter', sans-serif; transition: all 0.2s; }
+    .btn:hover { background: var(--monday); color: var(--storm); }
+    .btn.purple { background: var(--purple); }
+    .btn.purple:hover { background: #c4b5fd; }
+    .btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+    .date-nav { display: flex; align-items: center; gap: 12px; }
+    .date-nav input[type="date"] { padding: 10px 14px; background: rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.15); border-radius: 8px; color: white; font-size: 13px; font-family: 'Inter', sans-serif; }
+    .date-nav input:focus { outline: none; border-color: var(--purple); }
+
+    /* Overall card */
+    .overall-card { background: linear-gradient(135deg, rgba(167,139,250,0.15), rgba(121,226,255,0.1)); border: 1px solid rgba(167,139,250,0.3); border-radius: 16px; padding: 28px; margin-bottom: 32px; }
+    .overall-headline { font-size: 22px; font-weight: 800; color: var(--purple); margin-bottom: 12px; }
+    .overall-summary { font-size: 15px; color: rgba(255,255,255,0.85); line-height: 1.7; margin-bottom: 16px; }
+    .overall-opportunity { background: rgba(199,248,186,0.1); border-left: 3px solid var(--day); padding: 12px 16px; border-radius: 0 8px 8px 0; font-size: 14px; color: var(--day); }
+    .overall-opportunity strong { color: white; }
+
+    .meta-row { display: flex; gap: 24px; margin-bottom: 24px; font-size: 13px; color: rgba(255,255,255,0.5); }
+    .meta-row span { display: flex; align-items: center; gap: 6px; }
+
+    /* Country cards */
+    .countries-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(420px, 1fr)); gap: 20px; }
+    .country-card { background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.1); border-radius: 16px; padding: 24px; transition: all 0.3s; }
+    .country-card:hover { border-color: var(--purple); box-shadow: 0 8px 32px rgba(167,139,250,0.1); }
+    .country-name { font-size: 20px; font-weight: 800; color: var(--monday); margin-bottom: 4px; }
+    .country-counts { display: flex; gap: 12px; margin-bottom: 16px; }
+    .count-badge { padding: 4px 10px; border-radius: 12px; font-size: 11px; font-weight: 700; }
+    .count-badge.links { background: rgba(121,226,255,0.2); color: var(--monday); }
+    .count-badge.reels { background: rgba(199,248,186,0.2); color: var(--day); }
+    .count-badge.webby { background: rgba(167,139,250,0.2); color: var(--purple); }
+
+    .themes-row { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 14px; }
+    .theme-tag { padding: 4px 10px; background: rgba(167,139,250,0.15); border-radius: 20px; font-size: 11px; color: var(--purple); font-weight: 600; }
+
+    .country-summary { font-size: 13px; color: rgba(255,255,255,0.75); line-height: 1.6; margin-bottom: 12px; }
+    .country-trending { font-size: 12px; color: var(--suede); font-style: italic; }
+
+    .source-section { margin-top: 14px; }
+    .source-title { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; color: rgba(255,255,255,0.4); margin-bottom: 8px; cursor: pointer; display: flex; align-items: center; gap: 6px; }
+    .source-title:hover { color: rgba(255,255,255,0.7); }
+    .source-items { display: none; }
+    .source-items.open { display: block; }
+    .source-item { padding: 8px 12px; background: rgba(0,0,0,0.2); border-radius: 8px; margin-bottom: 6px; font-size: 12px; }
+    .source-item .item-title { color: white; font-weight: 600; }
+    .source-item .item-meta { color: rgba(255,255,255,0.5); font-size: 11px; margin-top: 2px; }
+
+    /* Loading / empty states */
+    .loading { text-align: center; padding: 80px 20px; }
+    .loading-spinner { width: 40px; height: 40px; border: 3px solid rgba(167,139,250,0.3); border-top-color: var(--purple); border-radius: 50%; animation: spin 0.8s linear infinite; margin: 0 auto 16px; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .empty-state { text-align: center; padding: 80px 20px; color: rgba(255,255,255,0.4); }
+    .empty-state h2 { color: var(--purple); margin-bottom: 12px; }
+
+    .gen-status { font-size: 12px; color: var(--day); margin-left: 8px; }
+
+    @media (max-width: 900px) {
+      .countries-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <nav class="nav">
+      <a href="statistics.html">📊 Statistics</a>
+      <a href="workspace.html">📝 Workspace</a>
+      <a href="instagram-reels.html">🎬 Instagram Reels</a>
+      <a href="webby-data.html">🌐 Webby Data</a>
+      <a href="digest.html" class="active">🤖 AI Digest</a>
+    </nav>
+
+    <div class="header">
+      <div class="header-left">
+        <h1>🤖 AI Digest</h1>
+        <p>Daily AI-powered analysis of top content across all sources by country</p>
+      </div>
+      <div class="header-right">
+        <div class="date-nav">
+          <input type="date" id="digestDate" />
+          <button class="btn" onclick="loadDigest()">Load</button>
+        </div>
+        <button class="btn purple" id="generateBtn" onclick="generateDigest()">⚡ Generate Now</button>
+        <span class="gen-status" id="genStatus"></span>
+      </div>
+    </div>
+
+    <div id="content">
+      <div class="loading" id="loader">
+        <div class="loading-spinner"></div>
+        <div>Loading digest...</div>
+      </div>
+    </div>
+  </div>
+
+<script>
+const API = window.location.hostname === 'localhost' ? 'http://localhost:3000' : '';
+let currentDate = null;
+
+// Set date picker to yesterday
+const yesterday = new Date();
+yesterday.setDate(yesterday.getDate() - 1);
+document.getElementById('digestDate').value = yesterday.toISOString().split('T')[0];
+
+// Load on page load
+loadDigest();
+
+async function loadDigest() {
+  const dateInput = document.getElementById('digestDate').value;
+  const contentEl = document.getElementById('content');
+
+  contentEl.innerHTML = '<div class="loading"><div class="loading-spinner"></div><div>Loading digest...</div></div>';
+
+  try {
+    const url = dateInput
+      ? `${API}/api/digest?date=${dateInput}`
+      : `${API}/api/digest`;
+
+    const resp = await fetch(url);
+    const json = await resp.json();
+    const digests = json.data || [];
+
+    if (digests.length === 0) {
+      contentEl.innerHTML = `
+        <div class="empty-state">
+          <h2>No digest available</h2>
+          <p>No AI digest found for ${dateInput || 'any date'}. Click "Generate Now" to create one.</p>
+        </div>`;
+      return;
+    }
+
+    const digest = digests[0];
+    currentDate = digest.digest_date;
+    document.getElementById('digestDate').value = currentDate;
+    renderDigest(digest.content);
+  } catch (e) {
+    contentEl.innerHTML = `<div class="empty-state"><h2>Error</h2><p>${e.message}</p></div>`;
+  }
+}
+
+function renderDigest(c) {
+  const contentEl = document.getElementById('content');
+  const overall = c.overall_summary || {};
+  const countries = c.countries || {};
+
+  let html = '';
+
+  // Meta row
+  html += `<div class="meta-row">
+    <span>📅 ${c.date}</span>
+    <span>🔗 ${c.total_links || 0} links</span>
+    <span>🎬 ${c.total_reels || 0} reels</span>
+    <span>🌐 ${c.total_webby || 0} webby</span>
+    <span>⏱ Generated ${new Date(c.generated_at).toLocaleString()}</span>
+  </div>`;
+
+  // Overall card
+  if (overall.headline || overall.summary) {
+    html += `<div class="overall-card">
+      <div class="overall-headline">${overall.headline || 'Daily Digest'}</div>
+      <div class="overall-summary">${overall.summary || ''}</div>
+      ${overall.top_opportunity ? `<div class="overall-opportunity"><strong>Top Opportunity:</strong> ${overall.top_opportunity}</div>` : ''}
+    </div>`;
+  }
+
+  // Country cards
+  html += '<div class="countries-grid">';
+  const sortedCountries = Object.entries(countries).sort((a, b) => {
+    const order = ['UAE', 'Oman', 'KSA', 'Bahrain', 'Qatar', 'Kuwait'];
+    const ai = order.indexOf(a[0]);
+    const bi = order.indexOf(b[0]);
+    if (ai !== -1 && bi !== -1) return ai - bi;
+    if (ai !== -1) return -1;
+    if (bi !== -1) return 1;
+    return a[0].localeCompare(b[0]);
+  });
+
+  for (const [country, data] of sortedCountries) {
+    const ai = data.ai_summary || {};
+    const themes = ai.top_themes || [];
+
+    html += `<div class="country-card">
+      <div class="country-name">${getFlag(country)} ${country}</div>
+      <div class="country-counts">
+        <span class="count-badge links">🔗 ${data.links_count || 0}</span>
+        <span class="count-badge reels">🎬 ${data.reels_count || 0}</span>
+        <span class="count-badge webby">🌐 ${data.webby_count || 0}</span>
+      </div>`;
+
+    if (themes.length > 0) {
+      html += '<div class="themes-row">';
+      for (const t of themes) {
+        html += `<span class="theme-tag">${t}</span>`;
+      }
+      html += '</div>';
+    }
+
+    if (ai.content_opportunities) {
+      html += `<div class="country-summary">${ai.content_opportunities}</div>`;
+    }
+    if (ai.trending_note) {
+      html += `<div class="country-trending">📈 ${ai.trending_note}</div>`;
+    }
+
+    // Expandable source details
+    html += renderSourceSection('🔗 Top Links', data.top_links || [], 'links');
+    html += renderSourceSection('🎬 Top Reels', data.top_reels || [], 'reels');
+    html += renderSourceSection('🌐 Top Webby', data.top_webby || [], 'webby');
+
+    html += '</div>';
+  }
+  html += '</div>';
+
+  contentEl.innerHTML = html;
+}
+
+function renderSourceSection(title, items, type) {
+  if (!items.length) return '';
+  const id = `src_${type}_${Math.random().toString(36).slice(2, 8)}`;
+
+  let itemsHtml = '';
+  for (const item of items) {
+    if (type === 'links') {
+      itemsHtml += `<div class="source-item">
+        <div class="item-title">${item.title || 'Untitled'}</div>
+        <div class="item-meta">${item.domain || ''} · ${item.relevance || ''}</div>
+        ${item.write_idea ? `<div class="item-meta" style="color:var(--day)">${item.write_idea}</div>` : ''}
+      </div>`;
+    } else if (type === 'reels') {
+      itemsHtml += `<div class="source-item">
+        <div class="item-title">${item.theme || 'No theme'}</div>
+        <div class="item-meta">${item.account || ''} · ${item.category || ''} · ${(item.views || 0).toLocaleString()} views</div>
+        ${item.hook ? `<div class="item-meta" style="color:var(--day)">${item.hook}</div>` : ''}
+      </div>`;
+    } else {
+      itemsHtml += `<div class="source-item">
+        <div class="item-title">${item.topic || 'No topic'}</div>
+        <div class="item-meta">${item.keyword || ''}</div>
+      </div>`;
+    }
+  }
+
+  return `<div class="source-section">
+    <div class="source-title" onclick="this.nextElementSibling.classList.toggle('open')">▶ ${title} (${items.length})</div>
+    <div class="source-items" id="${id}">${itemsHtml}</div>
+  </div>`;
+}
+
+function getFlag(country) {
+  const flags = { 'UAE': '🇦🇪', 'Oman': '🇴🇲', 'KSA': '🇸🇦', 'Bahrain': '🇧🇭', 'Qatar': '🇶🇦', 'Kuwait': '🇰🇼' };
+  return flags[country] || '🌍';
+}
+
+async function generateDigest() {
+  const btn = document.getElementById('generateBtn');
+  const status = document.getElementById('genStatus');
+  const dateInput = document.getElementById('digestDate').value;
+
+  btn.disabled = true;
+  status.textContent = 'Generating...';
+
+  try {
+    const resp = await fetch(`${API}/api/digest?date=${dateInput}`, { method: 'POST' });
+    const json = await resp.json();
+
+    if (json.success) {
+      status.textContent = 'Done!';
+      renderDigest(json.content);
+      setTimeout(() => { status.textContent = ''; }, 3000);
+    } else {
+      status.textContent = `Error: ${json.error}`;
+    }
+  } catch (e) {
+    status.textContent = `Error: ${e.message}`;
+  } finally {
+    btn.disabled = false;
+  }
+}
+</script>
+</body>
+</html>
