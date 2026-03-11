@@ -64,6 +64,8 @@
     .relevance-tag.rel-high { background: rgba(199,248,186,0.25); color: var(--day); }
     .relevance-tag.rel-medium { background: rgba(255,215,0,0.2); color: #ffd700; }
     .relevance-tag.rel-low { background: rgba(255,107,107,0.2); color: #ff6b6b; }
+    .relevance-tag.rel-maybe-not-relevant { background: rgba(255,107,107,0.15); color: #ff6b6b; }
+    .caption-text.fallback { font-style: italic; opacity: 0.6; }
     .link-cell a { color: var(--suede); text-decoration: none; font-size: 12px; }
     .link-cell a:hover { color: var(--monday); text-decoration: underline; }
     .date { font-size: 12px; color: rgba(255,255,255,0.5); white-space: nowrap; }
@@ -319,7 +321,8 @@
 
       rowsData = data;
       tbody.innerHTML = data.map((r, idx) => {
-        const rowPreview = r.row ? (r.row.length > 120 ? r.row.slice(0, 120) + '...' : r.row) : '';
+        const captionText = r.row || r.topic || r.keyword || '';
+        const rowPreview = captionText ? (captionText.length > 120 ? captionText.slice(0, 120) + '...' : captionText) : '';
         const isSocial = r.posted_socials && r.posted_socials.trim() !== '';
         const isBlog = r.posted_blog && r.posted_blog.trim() !== '';
         const date = r.created_at ? new Date(r.created_at).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit' }) : '-';
@@ -329,7 +332,7 @@
         const relClass = r.relevance ? `rel-${r.relevance.toLowerCase().replace(/\s+/g, '-')}` : '';
 
         return `<tr>
-          <td class="caption-cell">${r.row ? `<div class="caption-text truncate" onclick="openRowModal(${idx})">${rowPreview}</div>` : '<span class="no-data">-</span>'}</td>
+          <td class="caption-cell">${captionText ? `<div class="caption-text truncate${!r.row ? ' fallback' : ''}" onclick="openRowModal(${idx})">${rowPreview}</div>` : '<span class="no-data">-</span>'}</td>
           <td class="link-cell">${r.link ? `<a href="${r.link}" target="_blank">${isInstaLink ? '📸 Open' : '🔗 Open'}</a>` : '-'}</td>
           <td><span class="keyword">${r.keyword || '-'}</span></td>
           <td>${r.topic ? `<span class="topic-tag">${r.topic}</span>` : '<span class="no-data">-</span>'}</td>
@@ -345,7 +348,8 @@
     }
 
     function openRowModal(idx) {
-      const text = rowsData[idx]?.row || '';
+      const r = rowsData[idx];
+      const text = r?.row || r?.topic || r?.keyword || '';
       openModal('Content', text);
     }
 
