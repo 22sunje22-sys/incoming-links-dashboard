@@ -189,7 +189,6 @@
       <a href="workspace.html">📝 Workspace</a>
       <a href="instagram-reels.html">🎬 Instagram Reels</a>
       <a href="webby-data.html" class="active">🌐 Webby Data</a>
-      <a href="digest.html">🤖 AI Digest</a>
     </nav>
 
     <div class="header">
@@ -344,10 +343,23 @@
       'eventsinoman': 'Oman', 'muscat_whereto': 'Oman', 'eventona.om': 'Oman', 'wajmah.om': 'Oman'
     };
 
-    function getCountryFallback(link, keyword) {
-      // Try extracting handle from instagram link
+    // Owner full name → Country map (for memory table records)
+    const ownerCountryMap = {
+      'mbc1': 'KSA',
+      'uprizing events management': 'UAE',
+      'dubai festivals & retail events': 'UAE',
+      'eventona – event discovery app': 'Oman'
+    };
+
+    function getCountryFallback(link, keyword, ownerfullname) {
+      // Try owner full name first
+      if (ownerfullname) {
+        const c = ownerCountryMap[ownerfullname.trim().toLowerCase()];
+        if (c) return c;
+      }
+      // Try extracting handle from instagram link (only /reel/ or profile links, not /p/)
       if (link) {
-        const m = link.match(/instagram\.com\/([^/?]+)/);
+        const m = link.match(/instagram\.com\/(?!p\/)([^/?]+)/);
         if (m) {
           const c = handlerCountryMap[m[1].toLowerCase()];
           if (c) return c;
@@ -355,9 +367,6 @@
       }
       // Try matching keyword as a handle name
       if (keyword) {
-        const clean = keyword.trim().toLowerCase().replace(/^@/, '').replace(/\s+/g, '');
-        if (handlerCountryMap[clean]) return handlerCountryMap[clean];
-        // Also try with dots/underscores preserved (e.g. "eventona.om")
         const raw = keyword.trim().toLowerCase().replace(/^@/, '');
         if (handlerCountryMap[raw]) return handlerCountryMap[raw];
       }
@@ -420,7 +429,7 @@
         const socialTs = isSocial ? new Date(r.posted_socials).toLocaleDateString('en-GB', { day:'2-digit', month:'short', hour:'2-digit', minute:'2-digit' }) : '';
         const blogTs = isBlog ? new Date(r.posted_blog).toLocaleDateString('en-GB', { day:'2-digit', month:'short', hour:'2-digit', minute:'2-digit' }) : '';
         const date = r.created_at ? new Date(r.created_at).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit' }) : '-';
-        const countryVal = r.country || getCountryFallback(r.link, r.keyword);
+        const countryVal = r.country || getCountryFallback(r.link, r.keyword, r.ownerfullname);
         const cc = countryClass(countryVal);
         const isInstaLink = r.link && r.link.includes('instagram.com');
 
