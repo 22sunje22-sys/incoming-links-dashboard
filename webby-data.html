@@ -6,14 +6,25 @@
   <title>Webby Data - Incoming Links</title>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <style>
-    :root { --storm: #0A181C; --monday: #79E2FF; --day: #C7F8BA; --suede: #00A5D3; --electro: #221327; }
+    :root { --storm: #0A181C; --monday: #79E2FF; --day: #C7F8BA; --suede: #00A5D3; --electro: #221327; --bg: #0A181C; --text: white; --text-dim: rgba(255,255,255,0.5); --card: rgba(255,255,255,0.02); --card-border: rgba(255,255,255,0.08); --row-hover: rgba(121,226,255,0.03); --input-bg: rgba(0,0,0,0.4); --input-border: rgba(255,255,255,0.15); --nav-bg: rgba(255,255,255,0.1); --nav-hover: rgba(255,255,255,0.2); --thead-bg: rgba(0,0,0,0.4); --td-border: rgba(255,255,255,0.05); }
+    [data-theme="light"] { --bg: #f0f2f5; --text: #1a1a2e; --text-dim: rgba(0,0,0,0.5); --card: rgba(0,0,0,0.03); --card-border: rgba(0,0,0,0.1); --row-hover: rgba(0,100,200,0.04); --input-bg: white; --input-border: rgba(0,0,0,0.15); --nav-bg: rgba(0,0,0,0.06); --nav-hover: rgba(0,0,0,0.1); --thead-bg: rgba(0,0,0,0.05); --td-border: rgba(0,0,0,0.06); --storm: #f0f2f5; }
+    [data-theme="light"] .nav a { color: #1a1a2e; }
+    [data-theme="light"] .nav a.active { color: var(--bg); }
+    [data-theme="light"] th { color: var(--suede); border-bottom-color: var(--suede); }
+    [data-theme="light"] td { color: #1a1a2e; }
+    [data-theme="light"] select, [data-theme="light"] input[type="date"], [data-theme="light"] input[type="text"] { background: white; color: #1a1a2e; border-color: rgba(0,0,0,0.2); }
+    [data-theme="light"] option { background: white; color: #1a1a2e; }
+    [data-theme="light"] .modal-overlay .content-modal, [data-theme="light"] .flag-modal { background: white; border-color: rgba(0,0,0,0.1); }
+    [data-theme="light"] .content-modal-header h2, [data-theme="light"] .flag-modal h2 { color: var(--suede); }
+    [data-theme="light"] .flag-modal select, [data-theme="light"] .flag-modal textarea { background: #f5f5f5; color: #1a1a2e; }
+    [data-theme="light"] .content-modal-text { background: #f5f5f5; color: #1a1a2e; border-color: rgba(0,0,0,0.1); }
     * { margin: 0; padding: 0; box-sizing: border-box; }
-    body { font-family: 'Inter', sans-serif; background: var(--storm); min-height: 100vh; color: white; }
+    body { font-family: 'Inter', sans-serif; background: var(--bg); min-height: 100vh; color: var(--text); }
     .container { max-width: 1800px; margin: 0 auto; padding: 20px; }
 
     .nav { display: flex; gap: 12px; margin-bottom: 24px; }
-    .nav a { padding: 12px 24px; background: rgba(255,255,255,0.1); border-radius: 8px; color: white; text-decoration: none; font-weight: 600; font-size: 14px; transition: all 0.2s; }
-    .nav a:hover { background: rgba(255,255,255,0.2); }
+    .nav a { padding: 12px 24px; background: var(--nav-bg); border-radius: 8px; color: var(--text); text-decoration: none; font-weight: 600; font-size: 14px; transition: all 0.2s; }
+    .nav a:hover { background: var(--nav-hover); }
     .nav a.active { background: var(--monday); color: var(--storm); }
 
     .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap; gap: 16px; }
@@ -26,10 +37,10 @@
     .btn { padding: 10px 18px; background: var(--suede); color: white; border: none; border-radius: 8px; font-size: 13px; font-weight: 600; cursor: pointer; font-family: 'Inter', sans-serif; transition: all 0.2s; }
     .btn:hover { background: var(--monday); color: var(--storm); }
 
-    .filters { background: rgba(255,255,255,0.03); border-radius: 12px; padding: 16px; margin-bottom: 20px; display: flex; flex-wrap: wrap; gap: 12px; align-items: flex-end; }
+    .filters { background: var(--card); border-radius: 12px; padding: 16px; margin-bottom: 20px; display: flex; flex-wrap: wrap; gap: 12px; align-items: flex-end; }
     .filter-group { display: flex; flex-direction: column; gap: 4px; }
-    .filter-label { font-size: 10px; color: rgba(255,255,255,0.5); text-transform: uppercase; font-weight: 600; }
-    select, input[type="date"], input[type="text"] { padding: 8px 12px; background: rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.15); border-radius: 6px; color: white; font-size: 13px; font-family: 'Inter', sans-serif; }
+    .filter-label { font-size: 10px; color: var(--text-dim); text-transform: uppercase; font-weight: 600; }
+    select, input[type="date"], input[type="text"] { padding: 8px 12px; background: var(--input-bg); border: 1px solid var(--input-border); border-radius: 6px; color: var(--text); font-size: 13px; font-family: 'Inter', sans-serif; }
     select:focus, input:focus { outline: none; border-color: var(--monday); }
     option { background: var(--storm); }
 
@@ -39,12 +50,12 @@
 
     .table-info { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; font-size: 13px; color: rgba(255,255,255,0.6); }
 
-    .table-wrapper { overflow-x: auto; background: rgba(255,255,255,0.02); border-radius: 12px; border: 1px solid rgba(255,255,255,0.08); }
+    .table-wrapper { overflow-x: auto; background: var(--card); border-radius: 12px; border: 1px solid var(--card-border); }
     table { width: 100%; border-collapse: collapse; }
-    thead { background: rgba(0,0,0,0.4); position: sticky; top: 0; }
+    thead { background: var(--thead-bg); position: sticky; top: 0; }
     th { padding: 14px 12px; text-align: left; font-size: 10px; font-weight: 700; color: var(--monday); text-transform: uppercase; letter-spacing: 0.5px; white-space: nowrap; border-bottom: 2px solid var(--monday); }
-    td { padding: 14px 12px; border-bottom: 1px solid rgba(255,255,255,0.05); font-size: 13px; vertical-align: top; }
-    tr:hover { background: rgba(121,226,255,0.03); }
+    td { padding: 14px 12px; border-bottom: 1px solid var(--td-border); font-size: 13px; vertical-align: top; }
+    tr:hover { background: var(--row-hover); }
 
     .caption-cell { max-width: 350px; }
     .caption-text { color: rgba(255,255,255,0.8); font-size: 12px; cursor: pointer; padding: 6px 10px; background: rgba(255,255,255,0.05); border-radius: 8px; transition: all 0.2s; }
@@ -68,17 +79,33 @@
     .caption-text.fallback { font-style: italic; opacity: 0.6; }
     .link-cell a { color: var(--suede); text-decoration: none; font-size: 12px; }
     .link-cell a:hover { color: var(--monday); text-decoration: underline; }
-    .date { font-size: 12px; color: rgba(255,255,255,0.5); white-space: nowrap; }
+    .date { font-size: 12px; color: var(--text-dim); white-space: nowrap; }
     .no-data { color: rgba(255,255,255,0.2); font-size: 12px; }
 
     .actions { display: flex; gap: 6px; flex-wrap: wrap; }
     .action-btn { padding: 5px 10px; border: none; border-radius: 6px; font-size: 11px; font-weight: 600; cursor: pointer; font-family: 'Inter', sans-serif; transition: all 0.2s; white-space: nowrap; }
-    .action-btn.social-btn { background: rgba(138,43,226,0.15); color: #b388ff; border: 1px solid rgba(138,43,226,0.3); }
-    .action-btn.social-btn:hover { background: #b388ff; color: var(--storm); }
-    .action-btn.social-btn.active { background: #b388ff; color: var(--storm); }
-    .action-btn.blog-btn { background: rgba(0,165,211,0.15); color: var(--suede); border: 1px solid rgba(0,165,211,0.3); }
-    .action-btn.blog-btn:hover { background: var(--suede); color: white; }
-    .action-btn.blog-btn.active { background: var(--suede); color: white; }
+    .action-btn.flag-btn { background: rgba(255,107,107,0.15); color: #ff6b6b; border: 1px solid rgba(255,107,107,0.3); }
+    .action-btn.flag-btn:hover { background: #ff6b6b; color: white; }
+    .action-btn.flag-btn.active { background: #ff6b6b; color: white; }
+    .action-btn.social-btn { background: transparent; color: rgba(179,136,255,0.5); border: 1px dashed rgba(138,43,226,0.3); }
+    .action-btn.social-btn:hover { background: rgba(138,43,226,0.1); color: #b388ff; border-style: solid; }
+    .action-btn.social-btn.active { background: #b388ff; color: var(--storm); border: 1px solid #b388ff; box-shadow: 0 0 12px rgba(138,43,226,0.4); font-weight: 700; }
+    .action-btn.blog-btn { background: transparent; color: rgba(0,165,211,0.5); border: 1px dashed rgba(0,165,211,0.3); }
+    .action-btn.blog-btn:hover { background: rgba(0,165,211,0.1); color: var(--suede); border-style: solid; }
+    .action-btn.blog-btn.active { background: var(--suede); color: white; border: 1px solid var(--suede); box-shadow: 0 0 12px rgba(0,165,211,0.4); font-weight: 700; }
+    .action-btn .btn-ts { display: block; font-size: 9px; opacity: 0.7; font-weight: 400; margin-top: 1px; }
+    @keyframes btnPulse { 0% { transform: scale(1); } 50% { transform: scale(0.92); } 100% { transform: scale(1); } }
+    .action-btn.clicked { animation: btnPulse 0.25s ease; }
+
+    .flag-modal { background: var(--storm); border: 1px solid rgba(255,255,255,0.1); border-radius: 16px; padding: 32px; max-width: 500px; width: 90%; }
+    .flag-modal h2 { color: var(--monday); margin-bottom: 20px; font-size: 20px; }
+    .flag-modal label { display: block; margin-bottom: 8px; font-size: 13px; color: rgba(255,255,255,0.7); }
+    .flag-modal select, .flag-modal textarea { width: 100%; padding: 12px; background: rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.15); border-radius: 8px; color: white; font-size: 14px; font-family: 'Inter', sans-serif; margin-bottom: 16px; }
+    .flag-modal textarea { min-height: 100px; resize: vertical; }
+    .flag-modal-buttons { display: flex; gap: 12px; justify-content: flex-end; }
+    .flag-modal-btn { padding: 12px 24px; border: none; border-radius: 8px; font-size: 14px; font-weight: 600; cursor: pointer; font-family: 'Inter', sans-serif; }
+    .flag-modal-btn.cancel { background: rgba(255,255,255,0.1); color: white; }
+    .flag-modal-btn.submit { background: var(--monday); color: var(--storm); }
 
     .pagination { display: flex; justify-content: center; align-items: center; gap: 12px; margin-top: 24px; padding: 20px; }
     .page-btn { padding: 10px 18px; background: rgba(255,255,255,0.1); border: none; border-radius: 8px; color: white; font-size: 13px; cursor: pointer; font-family: 'Inter', sans-serif; transition: all 0.2s; }
@@ -169,6 +196,7 @@
       <div class="header-right">
         <div class="live"><div class="live-dot"></div> Live</div>
         <button class="btn" onclick="loadData()">↻ Refresh</button>
+        <button class="btn" id="theme-toggle" onclick="toggleTheme()" title="Switch theme">☀ Light</button>
       </div>
     </div>
 
@@ -210,6 +238,12 @@
         <button class="quick-btn" onclick="quickFilter('30d')">Last 30d</button>
         <button class="quick-btn" onclick="clearFilters()">✖ Clear</button>
       </div>
+    </div>
+
+    <div class="action-legend" style="display:flex;gap:18px;align-items:center;margin-bottom:12px;padding:10px 16px;background:rgba(255,255,255,0.03);border-radius:8px;font-size:12px;color:rgba(255,255,255,0.5);">
+      <span><span style="color:#ff6b6b;">⚑</span> Flag wrong relevance</span>
+      <span><span style="color:#b388ff;">○</span> Social — mark posted on socials</span>
+      <span><span style="color:var(--suede);">○</span> Blog — mark posted on blog</span>
     </div>
 
     <div class="table-info">
@@ -260,6 +294,24 @@
     </div>
   </div>
 
+  <!-- Flag Modal -->
+  <div class="modal-overlay" id="flag-modal">
+    <div class="flag-modal">
+      <h2>⚑ Flag Relevance Issue</h2>
+      <label>What should the relevance be?</label>
+      <select id="flag-relevance">
+        <option value="relevant">Relevant</option>
+        <option value="not_relevant">Not Relevant</option>
+      </select>
+      <label>Notes (optional)</label>
+      <textarea id="flag-notes" placeholder="Any additional context..."></textarea>
+      <div class="flag-modal-buttons">
+        <button class="flag-modal-btn cancel" onclick="closeFlagModal()">Cancel</button>
+        <button class="flag-modal-btn submit" onclick="submitFlag()">Submit Report</button>
+      </div>
+    </div>
+  </div>
+
   <script>
     const API_BASE = '/api';
 
@@ -272,6 +324,7 @@
     let totalCount = 0;
     let modalText = '';
     let rowsData = [];
+    let flaggedIds = new Set();
     const perPage = 30;
 
     function countryClass(c) {
@@ -326,6 +379,9 @@
         const rowPreview = captionText ? (captionText.length > 120 ? captionText.slice(0, 120) + '...' : captionText) : '';
         const isSocial = r.posted_socials && r.posted_socials.trim() !== '';
         const isBlog = r.posted_blog && r.posted_blog.trim() !== '';
+        const isFlagged = flaggedIds.has(r.id);
+        const socialTs = isSocial ? new Date(r.posted_socials).toLocaleDateString('en-GB', { day:'2-digit', month:'short', hour:'2-digit', minute:'2-digit' }) : '';
+        const blogTs = isBlog ? new Date(r.posted_blog).toLocaleDateString('en-GB', { day:'2-digit', month:'short', hour:'2-digit', minute:'2-digit' }) : '';
         const date = r.created_at ? new Date(r.created_at).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit' }) : '-';
         const cc = countryClass(r.country);
         const isInstaLink = r.link && r.link.includes('instagram.com');
@@ -341,8 +397,9 @@
           <td>${r.country ? `<span class="country-tag ${cc}">${r.country}</span>` : '<span class="no-data">—</span>'}</td>
           <td class="date">${date}</td>
           <td class="actions">
-            <button class="action-btn social-btn ${isSocial ? 'active' : ''}" onclick="toggleStatus('${r.id}', 'posted_socials', ${isSocial})">${isSocial ? '✓ Social' : '○ Social'}</button>
-            <button class="action-btn blog-btn ${isBlog ? 'active' : ''}" onclick="toggleStatus('${r.id}', 'posted_blog', ${isBlog})">${isBlog ? '✓ Blog' : '○ Blog'}</button>
+            <button class="action-btn flag-btn ${isFlagged ? 'active' : ''}" onclick="openFlagModal('${r.id}')" title="${isFlagged ? 'Already flagged' : 'Flag wrong relevance'}">⚑ Flag</button>
+            <button class="action-btn social-btn ${isSocial ? 'active' : ''}" onclick="clickFeedback(this); toggleStatus('${r.id}', 'posted_socials', ${isSocial})" title="${isSocial ? 'Posted on socials: ' + socialTs : 'Click to mark as posted on social media'}">${isSocial ? '✓ Social' : '○ Social'}${isSocial ? `<span class="btn-ts">${socialTs}</span>` : ''}</button>
+            <button class="action-btn blog-btn ${isBlog ? 'active' : ''}" onclick="clickFeedback(this); toggleStatus('${r.id}', 'posted_blog', ${isBlog})" title="${isBlog ? 'Posted on blog: ' + blogTs : 'Click to mark as posted on blog'}">${isBlog ? '✓ Blog' : '○ Blog'}${isBlog ? `<span class="btn-ts">${blogTs}</span>` : ''}</button>
           </td>
         </tr>`;
       }).join('');
@@ -383,8 +440,11 @@
     document.getElementById('content-modal').addEventListener('click', function(e) {
       if (e.target === this) closeModal();
     });
+    document.getElementById('flag-modal').addEventListener('click', function(e) {
+      if (e.target === this) closeFlagModal();
+    });
     document.addEventListener('keydown', function(e) {
-      if (e.key === 'Escape') closeModal();
+      if (e.key === 'Escape') { closeModal(); closeFlagModal(); }
     });
 
     async function toggleStatus(id, field, currentValue) {
@@ -394,6 +454,46 @@
         body: JSON.stringify({ id, table: 'memory', field, value: currentValue })
       });
       loadData();
+    }
+
+    function clickFeedback(el) {
+      el.classList.remove('clicked');
+      void el.offsetWidth;
+      el.classList.add('clicked');
+      setTimeout(() => el.classList.remove('clicked'), 300);
+    }
+
+    async function loadFlaggedIds() {
+      try {
+        const r = await fetch(`${API_BASE}/flag-issue?table_name=memory`);
+        const data = await r.json();
+        flaggedIds = new Set(data.flagged_ids || []);
+      } catch (e) { console.warn('Failed to load flagged IDs', e); }
+    }
+
+    let flagTargetId = null;
+    function openFlagModal(id) {
+      flagTargetId = id;
+      document.getElementById('flag-modal').classList.add('show');
+    }
+    function closeFlagModal() {
+      document.getElementById('flag-modal').classList.remove('show');
+      flagTargetId = null;
+    }
+    async function submitFlag() {
+      if (!flagTargetId) return;
+      const correct_relevance = document.getElementById('flag-relevance').value;
+      const notes = document.getElementById('flag-notes').value;
+      try {
+        await fetch(`${API_BASE}/flag-issue`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ link_id: flagTargetId, issue_type: 'wrong_relevance', correct_relevance, notes, table_name: 'memory' })
+        });
+        flaggedIds.add(flagTargetId);
+        closeFlagModal();
+        loadData();
+      } catch (e) { alert('Failed to submit flag: ' + e.message); }
     }
 
     function quickFilter(type) {
@@ -448,8 +548,30 @@
       document.getElementById(id).addEventListener('change', () => { currentPage = 1; loadData(); });
     });
 
+    // Theme toggle
+    function toggleTheme() {
+      const html = document.documentElement;
+      const current = html.getAttribute('data-theme');
+      const next = current === 'light' ? 'dark' : 'light';
+      html.setAttribute('data-theme', next);
+      localStorage.setItem('theme', next);
+      updateThemeBtn(next);
+    }
+    function updateThemeBtn(theme) {
+      const btn = document.getElementById('theme-toggle');
+      if (btn) btn.textContent = theme === 'light' ? '🌙 Dark' : '☀ Light';
+    }
+    (function initTheme() {
+      const saved = localStorage.getItem('theme');
+      if (saved) {
+        document.documentElement.setAttribute('data-theme', saved);
+        updateThemeBtn(saved);
+      }
+    })();
+
     // Initialize with last 7 days default
     document.getElementById('filter-from').value = new Date(Date.now() - 7*24*60*60*1000).toISOString().split('T')[0];
+    loadFlaggedIds();
     loadData();
     setInterval(loadData, 120000);
   </script>
