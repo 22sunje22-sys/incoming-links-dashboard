@@ -96,24 +96,23 @@
     .date { font-size: 12px; color: var(--text-dim); white-space: nowrap; }
 
     /* Action buttons */
-    .actions { display: flex; gap: 8px; flex-wrap: wrap; }
-    .action-btn { padding: 8px 14px; border: none; border-radius: 8px; font-size: 12px; font-weight: 600; cursor: pointer; font-family: 'Inter', sans-serif; transition: all 0.2s; display: flex; align-items: center; gap: 6px; }
+    .actions { display: flex; gap: 6px; flex-wrap: wrap; align-items: center; }
+    .action-btn { padding: 5px 10px; border: none; border-radius: 6px; font-size: 11px; font-weight: 600; cursor: pointer; font-family: 'Inter', sans-serif; transition: all 0.15s; white-space: nowrap; }
     .action-btn.done-btn { background: rgba(199,248,186,0.15); color: var(--day); border: 1px solid rgba(199,248,186,0.3); cursor: default; opacity: 0.6; }
     .action-btn.done-btn.active { background: var(--day); color: var(--storm); opacity: 1; }
 
-    /* Click feedback animation */
-    @keyframes btnPulse { 0% { transform: scale(1); } 50% { transform: scale(0.92); } 100% { transform: scale(1); } }
-    .action-btn.clicked { animation: btnPulse 0.25s ease; }
-    .action-btn.flag-btn { background: rgba(255,107,107,0.15); color: #ff6b6b; border: 1px solid rgba(255,107,107,0.3); }
-    .action-btn.flag-btn:hover { background: #ff6b6b; color: white; }
-    .action-btn.flag-btn.active { background: #ff6b6b; color: white; }
-    .action-btn.social-btn { background: transparent; color: rgba(179,136,255,0.5); border: 1px dashed rgba(138,43,226,0.3); }
-    .action-btn.social-btn:hover { background: rgba(138,43,226,0.1); color: #b388ff; border-style: solid; }
-    .action-btn.social-btn.active { background: #b388ff; color: var(--storm); border: 1px solid #b388ff; box-shadow: 0 0 12px rgba(138,43,226,0.4); font-weight: 700; }
-    .action-btn.blog-btn { background: transparent; color: rgba(0,165,211,0.5); border: 1px dashed rgba(0,165,211,0.3); }
-    .action-btn.blog-btn:hover { background: rgba(0,165,211,0.1); color: var(--suede); border-style: solid; }
-    .action-btn.blog-btn.active { background: var(--suede); color: white; border: 1px solid var(--suede); box-shadow: 0 0 12px rgba(0,165,211,0.4); font-weight: 700; }
-    .action-btn .btn-ts { display: block; font-size: 9px; opacity: 0.7; font-weight: 400; margin-top: 1px; }
+    .action-btn.flag-btn { background: transparent; color: var(--text-dim); border: none; opacity: 0.5; }
+    .action-btn.flag-btn:hover { background: rgba(255,107,107,0.15); color: #ff6b6b; opacity: 1; }
+    .action-btn.flag-btn.active { background: rgba(255,107,107,0.2); color: #ff6b6b; opacity: 1; }
+
+    /* Checkbox-style toggles */
+    .check-toggle { display: inline-flex; align-items: center; gap: 5px; cursor: pointer; font-size: 12px; padding: 4px 8px; border-radius: 6px; transition: all 0.15s; user-select: none; }
+    .check-toggle:hover { background: rgba(255,255,255,0.06); }
+    .check-toggle .check-box { width: 16px; height: 16px; border: 2px solid rgba(255,255,255,0.25); border-radius: 4px; display: flex; align-items: center; justify-content: center; font-size: 11px; transition: all 0.15s; flex-shrink: 0; }
+    .check-toggle .check-label { color: var(--text-dim); font-weight: 500; }
+    .check-toggle.checked .check-box { background: var(--day); border-color: var(--day); color: var(--storm); }
+    .check-toggle.checked .check-label { color: var(--day); font-weight: 600; }
+    .check-toggle .check-ts { font-size: 9px; color: var(--text-dim); opacity: 0.7; }
 
     .pagination { display: flex; justify-content: center; align-items: center; gap: 12px; margin-top: 24px; padding: 20px; }
     .page-btn { padding: 10px 18px; background: rgba(255,255,255,0.1); border: none; border-radius: 8px; color: white; font-size: 13px; cursor: pointer; font-family: 'Inter', sans-serif; transition: all 0.2s; }
@@ -292,8 +291,8 @@
     <div class="action-legend" style="display:flex;gap:18px;align-items:center;margin-bottom:12px;padding:10px 16px;background:rgba(255,255,255,0.03);border-radius:8px;font-size:12px;color:rgba(255,255,255,0.5);">
       <span title="Auto-marks when both Draft EN and Draft AR are linked">✓ <b>Drafts Done</b> (auto)</span>
       <span>⚑ <b>Flag</b> wrong relevance</span>
-      <span>○ <b>Social</b> — mark posted on socials</span>
-      <span>○ <b>Blog</b> — mark posted on blog</span>
+      <span>☐ <b>Social</b> — mark posted on socials</span>
+      <span>☐ <b>Blog</b> — mark posted on blog</span>
     </div>
 
     <div class="table-info">
@@ -517,12 +516,16 @@
             <button class="action-btn flag-btn ${isFlagged ? 'active' : ''}" onclick="openFlagModal('${r.id}', '${r.relevance || ''}')" title="${isFlagged ? 'Already flagged for review' : 'Report wrong relevance classification'}">
               ${isFlagged ? '🚩 Flagged' : '⚑ Flag'}
             </button>
-            <button class="action-btn social-btn ${isSocial ? 'active' : ''}" onclick="clickFeedback(this); togglePostStatus('${r.id}', 'posted_socials', ${isSocial})" title="${isSocial ? 'Posted on socials: ' + socialTs : 'Click to mark as posted on social media'}">
-              ${isSocial ? '✓ Social' : '○ Social'}${isSocial ? `<span class="btn-ts">${socialTs}</span>` : ''}
-            </button>
-            <button class="action-btn blog-btn ${isBlog ? 'active' : ''}" onclick="clickFeedback(this); togglePostStatus('${r.id}', 'posted_blog', ${isBlog})" title="${isBlog ? 'Posted on blog: ' + blogTs : 'Click to mark as posted on blog'}">
-              ${isBlog ? '✓ Blog' : '○ Blog'}${isBlog ? `<span class="btn-ts">${blogTs}</span>` : ''}
-            </button>
+            <span class="check-toggle ${isSocial ? 'checked' : ''}" onclick="togglePostStatus('${r.id}', 'posted_socials', ${isSocial})" title="${isSocial ? 'Posted: ' + socialTs : 'Mark as posted on socials'}">
+              <span class="check-box">${isSocial ? '✓' : ''}</span>
+              <span class="check-label">Social</span>
+              ${isSocial ? `<span class="check-ts">${socialTs}</span>` : ''}
+            </span>
+            <span class="check-toggle ${isBlog ? 'checked' : ''}" onclick="togglePostStatus('${r.id}', 'posted_blog', ${isBlog})" title="${isBlog ? 'Posted: ' + blogTs : 'Mark as posted on blog'}">
+              <span class="check-box">${isBlog ? '✓' : ''}</span>
+              <span class="check-label">Blog</span>
+              ${isBlog ? `<span class="check-ts">${blogTs}</span>` : ''}
+            </span>
           </td>
         </tr>`;
       }).join('');

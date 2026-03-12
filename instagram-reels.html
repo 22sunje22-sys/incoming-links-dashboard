@@ -116,9 +116,9 @@
     /* Action buttons */
     .actions { display: flex; gap: 6px; flex-wrap: wrap; align-items: center; }
     .action-btn { padding: 5px 10px; border: none; border-radius: 6px; font-size: 11px; font-weight: 600; cursor: pointer; font-family: 'Inter', sans-serif; transition: all 0.15s; white-space: nowrap; }
-    .action-btn.flag-btn { background: rgba(255,107,107,0.15); color: #ff6b6b; border: 1px solid rgba(255,107,107,0.3); }
-    .action-btn.flag-btn:hover { background: #ff6b6b; color: white; }
-    .action-btn.flag-btn.active { background: #ff6b6b; color: white; }
+    .action-btn.flag-btn { background: transparent; color: var(--text-dim); border: none; opacity: 0.5; }
+    .action-btn.flag-btn:hover { background: rgba(255,107,107,0.15); color: #ff6b6b; opacity: 1; }
+    .action-btn.flag-btn.active { background: rgba(255,107,107,0.2); color: #ff6b6b; opacity: 1; }
 
     /* Checkbox-style toggles */
     .check-toggle { display: inline-flex; align-items: center; gap: 5px; cursor: pointer; font-size: 12px; padding: 4px 8px; border-radius: 6px; transition: all 0.15s; user-select: none; }
@@ -394,6 +394,29 @@
     const fmt = n => n != null ? Number(n).toLocaleString() : '-';
     const fmtPct = n => n != null ? Number(n).toFixed(2) + '%' : '-';
 
+    // Handler → Country fallback map (from TRENDY sheet)
+    const handlerCountryMap = {
+      'dubai_pike': 'UAE', 'whatsondubai': 'UAE', 'timeoutdubai': 'UAE', 'dxbible': 'UAE',
+      'gulfbuzz': 'UAE', 'lovindubai': 'UAE', 'mydubai': 'UAE', 'reel.dxb': 'UAE', 'uae_buzz': 'UAE',
+      'localbh': 'Bahrain', 'bahrainthisweek': 'Bahrain', 'bahrainconfidential': 'Bahrain',
+      'visitbahrain.bh': 'Bahrain', 'calendar.bh': 'Bahrain', 'tourismbh': 'Bahrain',
+      'scenenowsaudi': 'KSA', 'jed.calendar': 'KSA', 'sc.mbs1': 'KSA', 'jeddah_events1': 'KSA',
+      'omarrating': 'KSA', 'riyadhconnect': 'KSA',
+      'visitqatar': 'Qatar', 'qatarcalendar': 'Qatar', 'qatartourism': 'Qatar', '974.qa': 'Qatar',
+      'ilqlive': 'Qatar', 'wgoqatar': 'Qatar', 'peopleandqatar': 'Qatar', 'lovinqtr': 'Qatar',
+      'qatardiarys': 'Qatar', 'marhabaguideqatar': 'Qatar', '7doha.qa': 'Qatar',
+      'insta__oman': 'Oman', 'muscat.events': 'Oman', 'news_oman1': 'Oman', 'layali_muscat': 'Oman',
+      'oman_events': 'Oman', 'khareef.dhofar': 'Oman', 'omanconvention': 'Oman',
+      'eventsinoman': 'Oman', 'muscat_whereto': 'Oman', 'eventona.om': 'Oman', 'wajmah.om': 'Oman'
+    };
+
+    function getCountryFallback(accountUrl) {
+      if (!accountUrl) return null;
+      const m = accountUrl.match(/instagram\.com\/([^/?]+)/);
+      const handle = m ? m[1].toLowerCase() : accountUrl.toLowerCase().replace(/^@/, '');
+      return handlerCountryMap[handle] || null;
+    }
+
     function extractHandle(url) {
       if (!url) return '-';
       const match = url.match(/instagram\.com\/([^/?]+)/);
@@ -512,7 +535,8 @@
         const l = Number(r.likes) || 0;
         const c = Number(r.comments) || 0;
         const er = v > 0 ? ((l + c) / v * 100) : 0;
-        const cc = countryClass(r.country);
+        const countryVal = r.country || getCountryFallback(r.account_url);
+        const cc = countryClass(countryVal);
 
         return `<tr>
           <td class="account">${r.account_url ? `<a href="${r.account_url}" target="_blank">${handle}</a>` : '-'}</td>
@@ -526,7 +550,7 @@
           <td class="duration">${formatDuration(r.duration_sec)}</td>
           <td class="theme-cell">${r.theme ? `<div class="theme-text truncate" onclick="openRowModal(${idx}, 'theme', 'Theme')">${themePreview}</div>` : '<span class="no-data">—</span>'}</td>
           <td class="category-cell"><div class="truncate">${catPreview || '<span class="no-data">—</span>'}</div></td>
-          <td>${r.country ? `<span class="country-tag ${cc}">${r.country}</span>` : '<span class="no-data">—</span>'}</td>
+          <td>${countryVal ? `<span class="country-tag ${cc}"${!r.country ? ' title="Inferred from account"' : ''}>${countryVal}</span>` : '<span class="no-data">—</span>'}</td>
           <td class="hook-cell">${r.hook ? `<div class="hook-text truncate" onclick="openRowModal(${idx}, 'hook', 'Hook')">${hookPreview}</div>` : '<span class="no-data">—</span>'}</td>
           <td><span class="status ${isSent ? 'sent' : 'pending'}">${isSent ? '✓ Sent' : '○ Pending'}</span></td>
           <td class="actions">
